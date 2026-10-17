@@ -1497,6 +1497,140 @@
 </body>
 </html>`;
 
+        const GAME_HTML = `<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Remainder Wars</title>
+<style>
+:root{--bg:#120d2b;--p1:#2a1b5e;--p2:#3d2a86;--ink:#f4f1ff;--mut:#b9aee8;--hot:#ff5c7a;--gold:#ffd23f;--ok:#2ee59d;--bad:#ff4d5e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;min-height:100%}
+body{background:radial-gradient(circle at 50% 0,#3b2a8f 0,var(--bg) 60%) fixed}
+#app{max-width:520px;margin:0 auto;padding:12px}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px;gap:6px}
+.hud span{background:var(--p1);padding:5px 10px;border-radius:20px}
+.boss{text-align:center;margin:8px 0}
+.be{font-size:76px;line-height:1.1;display:inline-block}
+.bn{font-weight:800;color:var(--gold)}
+.hpb,.tb{height:14px;background:var(--p1);border-radius:10px;overflow:hidden;margin:6px 0}
+.hpb i{display:block;height:100%;background:linear-gradient(90deg,var(--hot),#ff9a5c);transition:width .4s}
+.tb i{display:block;height:100%;background:var(--ok);transition:width .1s linear}
+.q{background:var(--p1);border:2px solid var(--p2);border-radius:16px;padding:14px;font-size:18px;font-weight:700;margin:8px 0;overflow-wrap:anywhere}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts button{padding:16px 6px;font-size:18px;font-weight:800;background:var(--p2);color:var(--ink);border:3px solid #6a56d6;border-radius:14px;cursor:pointer;overflow-wrap:anywhere}
+.opts button:active{transform:scale(.97)}
+.opts button.ok{background:var(--ok);color:#06281c;border-color:#fff}
+.opts button.no{background:var(--bad);border-color:#fff}
+.opts button:disabled{opacity:.55}
+.opts button.ok:disabled,.opts button.no:disabled{opacity:1}
+.pw{display:flex;gap:10px;margin-top:10px}
+.pw button,.big{flex:1;padding:10px;background:var(--gold);color:#2b2000;border:0;border-radius:12px;font:800 15px inherit;font-family:inherit;cursor:pointer}
+.pw button:disabled{opacity:.35}
+.fb{min-height:28px;text-align:center;font-weight:800;margin-top:8px}
+.scr{text-align:center;padding:30px 10px}
+.scr h1{font-size:34px;margin:6px 0;color:var(--gold)}
+.big{display:block;width:100%;margin-top:16px;font-size:20px;padding:14px}
+.hit{animation:hit .4s}.shk{animation:shk .4s}
+@keyframes hit{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(-8deg);filter:brightness(2)}100%{transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@media (prefers-reduced-motion:reduce){.hit,.shk{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const SUP=["","","²","³"];
+function fmt(cs){const d=cs.length-1;let s="";
+cs.forEach((c,i)=>{if(!c)return;const pw=d-i,ab=Math.abs(c);
+const co=(ab==1&&pw>0)?"":ab;const v=pw==0?"":(pw==1?"x":"x"+SUP[pw]);
+if(!s)s=(c<0?"−":"")+co+v;else s+=(c<0?" − ":" + ")+co+v});
+return s||"0"}
+const CB=(a,b)=>{let r=1;for(let i=1;i<=b;i++)r=r*(a-b+i)/i;return Math.round(r)};
+let ac=null;
+function beep(f,d){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const BOSS=[
+{e:"🐉",n:"Division Dragon",tm:15},
+{e:"🤖",n:"Binomial Bot",tm:15},
+{e:"👾",n:"Remainder King",tm:12}];
+function mkDiv(cubic,kind){
+const c0=R(1,4)*(Math.random()<.5?-1:1),a=cubic?R(1,2):R(1,3),b=R(-4,4),d=R(-4,4),r=R(-5,5);
+const q=cubic?[a,b,d]:[a,b];
+const dv=cubic?[a,a*c0+b,b*c0+d,d*c0+r]:[a,a*c0+b,b*c0+r];
+const pre="("+fmt(dv)+") ÷ ("+fmt([1,c0])+")";
+if(kind=="q"){const ds=new Set([fmt(q)]);let g=0;
+while(ds.size<4&&g++<200){const t=q.slice();t[R(0,t.length-1)]+=R(0,1)?1:-1;if(Math.random()<.3){const j=R(0,t.length-1);t[j]=-t[j]}if(!t[0])continue;ds.add(fmt(t))}
+return {p:"Quotient of "+pre,a:fmt(q),o:sh([...ds])}}
+const ds=new Set([String(r)]);while(ds.size<4)ds.add(String(r+R(-4,4)));
+return {p:"Remainder of "+pre,a:String(r),o:sh([...ds])}}
+function mkBin(){
+const N=R(3,9),k=R(0,6);
+const ST=[
+{p:"To prove nC0 + 2·nC1 + 2²·nC2 + … = 3ⁿ, substitute x =",a:"2",o:["2","3","1","−2"]},
+{p:"To prove 8ⁿ − 1 is divisible by 7, write 8 =",a:"7 + 1",o:["7 + 1","6 + 1","9 − 1","8 + 0"]},
+{p:"To prove nC0 − nC1/2 + nC2/2² − … = (1/2)ⁿ, substitute x =",a:"−1/2",o:["−1/2","1/2","−2","2"]},
+{p:"To prove nC0 − 2·nC1 + 2²·nC2 − … = (−1)ⁿ, substitute x =",a:"−2",o:["−2","2","−1","1"]},
+{p:"Substituting x = 1 in (1 + x)ⁿ proves the sum of all nCk equals",a:"2ⁿ",o:["2ⁿ","n²","0","1"]}];
+const t=R(0,6);
+if(t<=1){const A=2**N,ds=new Set([String(A)]);[A-1,A*2,N*N,A/2].forEach(v=>{if(ds.size<4)ds.add(String(v))});return {p:"For n = "+N+": nC0 + nC1 + … + nCn =",a:String(A),o:sh([...ds])}}
+if(t==2){return {p:"For n = "+N+": nC0 − nC1 + nC2 − … + (−1)ⁿ·nCn =",a:"0",o:sh(["0","1","−1",String(2**N)])}}
+if(t==3){const A=CB(N,2),ds=new Set([String(A)]);[CB(N,3),N,2*N,A+N].forEach(v=>{if(ds.size<4)ds.add(String(v))});let z=1;while(ds.size<4)ds.add(String(A+z++));return {p:"Coefficient of x² in (1 + x)^"+N+" is",a:String(A),o:sh([...ds])}}
+const s=ST[R(0,ST.length-1)];return {p:s.p,a:s.a,o:sh(s.o)}}
+function mkQ(lv){
+if(lv==0)return mkDiv(false,Math.random()<.65?"q":"r");
+if(lv==1)return mkBin();
+return Math.random()<.5?mkDiv(true,Math.random()<.65?"q":"r"):mkBin()}
+let G,tm=null;
+function start(){G={lv:0,sc:0,hp3:3,cb:0,hp:100,f5:2,fz:1};nextQ()}
+function stars(n){return "❤️".repeat(n)+"🖤".repeat(3-n)}
+function nextQ(){G.q=mkQ(G.lv);G.t=BOSS[G.lv].tm;G.max=G.t;G.done=false;render();
+clearInterval(tm);tm=setInterval(()=>{G.t-=.1;const b=$("tb");if(b){b.style.width=Math.max(0,G.t/G.max*100)+"%";b.style.background=G.t<4?"var(--bad)":"var(--ok)"}if(G.t<=0)ans(-1)},100)}
+function render(){
+const B=BOSS[G.lv];
+$("app").innerHTML=
+"<div class='hud'><span>Level "+(G.lv+1)+"/3</span><span>⭐ "+G.sc+"</span><span>"+stars(G.hp3)+"</span><span>🔥 x"+G.cb+"</span></div>"+
+"<div class='boss'><div class='be' id='be'>"+B.e+"</div><div class='bn'>"+B.n+"</div><div class='hpb'><i id='hpi' style='width:"+Math.max(0,G.hp)+"%'></i></div></div>"+
+"<div class='tb'><i id='tb' style='width:100%'></i></div>"+
+"<div class='q'>"+G.q.p+"</div>"+
+"<div class='opts'>"+G.q.o.map((x,i)=>"<button data-i='"+i+"'>"+x+"</button>").join("")+"</div>"+
+"<div class='pw'><button id='p5' "+(G.f5?"":"disabled")+">✂ 50/50 ("+G.f5+")</button><button id='pf' "+(G.fz?"":"disabled")+">⏱ +8s ("+G.fz+")</button></div>"+
+"<div class='fb' id='fb'></div>";
+document.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>ans(+b.dataset.i));
+$("p5").onclick=()=>{if(G.done||!G.f5)return;G.f5--;let w=0;document.querySelectorAll(".opts button").forEach(b=>{if(b.textContent!=G.q.a&&w<2){b.disabled=true;w++}});$("p5").disabled=true;$("p5").textContent="✂ 50/50 ("+G.f5+")";if(G.f5)$("p5").disabled=false};
+$("pf").onclick=()=>{if(G.done||!G.fz)return;G.fz--;G.t=Math.min(G.t+8,G.max+8);G.max=Math.max(G.max,G.t);$("pf").disabled=true}}
+function ans(i){
+if(G.done)return;G.done=true;clearInterval(tm);
+const btns=[...document.querySelectorAll(".opts button")];
+btns.forEach(b=>{b.disabled=true;if(b.textContent==G.q.a)b.classList.add("ok")});
+const ok=i>=0&&G.q.o[i]==G.q.a;
+if(ok){G.cb++;const dm=12+3*Math.min(G.cb,5);G.hp-=dm;G.sc+=100+Math.round(G.t*10)+G.cb*20;
+$("fb").textContent="💥 Hit! −"+dm+" HP"+(G.cb>2?"  🔥 Combo x"+G.cb:"");$("be").classList.add("hit");beep(660,.12);setTimeout(()=>beep(880,.15),110)}
+else{if(i>=0)btns[i].classList.add("no");G.hp3--;G.cb=0;
+$("fb").textContent=(i<0?"⏰ Time's up! ":"💔 Ouch! ")+"Answer: "+G.q.a;document.querySelector(".boss").classList.add("shk");beep(160,.3)}
+$("hpi").style.width=Math.max(0,G.hp)+"%";
+setTimeout(()=>{
+if(G.hp3<=0)return over(false);
+if(G.hp<=0){if(G.lv==2)return over(true);return lvlUp()}
+nextQ()},1400)}
+function lvlUp(){
+beep(523,.15);setTimeout(()=>beep(784,.25),150);
+const c=BOSS[G.lv];G.lv++;G.hp=100;G.fz=1;G.sc+=300;
+$("app").innerHTML="<div class='scr'><div class='be'>"+c.e+"💀</div><h1>"+c.n+" defeated!</h1><p>+300 bonus. Next up: "+BOSS[G.lv].e+" "+BOSS[G.lv].n+"</p><button class='big' id='go'>Fight on ⚔️</button></div>";
+$("go").onclick=nextQ}
+function over(w){
+clearInterval(tm);const st=G.hp3==3?3:G.hp3==2?2:1;
+$("app").innerHTML="<div class='scr'><div class='be'>"+(w?"🏆":"💀")+"</div><h1>"+(w?"Victory!":"Game over")+"</h1><p>Score: <b>"+G.sc+"</b>"+(w?"<br>"+"⭐".repeat(st)+" stars (fewer mistakes = more stars)":"<br>Reached level "+(G.lv+1)+" of 3")+"</p><button class='big' id='go'>Play again</button></div>";
+$("go").onclick=start}
+$("app").innerHTML="<div class='scr'><div class='be'>⚔️</div><h1>Remainder Wars</h1><p>Defeat 3 bosses with polynomial division and the Binomial Theorem.<br>Answer fast for bonus points. Build combos for bigger hits.<br>3 lives. Questions are random every time!</p><button class='big' id='go'>Start battle</button></div>";
+$("go").onclick=start;
+<\/script>
+</body>
+</html>`;
+
         const PRACTICE_HTML = `<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
