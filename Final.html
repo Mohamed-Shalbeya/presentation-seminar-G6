@@ -1,0 +1,4119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>POWER CREATIVE ALGEBRA — Division of Polynomials</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* POWER CREATIVE ALGEBRA — Cyber Arena design system */
+      :root {
+        --bg: #080b20;
+        --surf: #171d3b;
+        --vio: #7c3aed;
+        --cy: #20d9ff;
+        --li: #b7ff3c;
+        --tx: #f4f7ff;
+        --co: #ff718a;
+        --vio-t: #a98bff;
+        --font: "Poppins", "Montserrat", "Segoe UI", system-ui, sans-serif;
+        --math:
+          "Poppins", "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #05071a;
+        overflow: hidden;
+        font-family: var(--font);
+        color: var(--tx);
+        font-weight: 500;
+      }
+      button {
+        font-family: inherit;
+      }
+      #stage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: 0 0;
+        background: var(--bg);
+        overflow: hidden;
+      }
+
+      /* ---------- background ---------- */
+      #bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            1100px 700px at 88% 6%,
+            rgba(124, 58, 237, 0.38),
+            transparent 62%
+          ),
+          radial-gradient(
+            900px 600px at 6% 100%,
+            rgba(32, 217, 255, 0.17),
+            transparent 62%
+          ),
+          linear-gradient(180deg, #080b20, #0b1032);
+        transition: opacity 0.6s;
+      }
+      #bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(32, 217, 255, 0.065) 2px, transparent 2px),
+          linear-gradient(90deg, rgba(32, 217, 255, 0.065) 2px, transparent 2px);
+        background-size: 96px 96px;
+        -webkit-mask-image: radial-gradient(
+          ellipse at 50% 55%,
+          #000 25%,
+          transparent 85%
+        );
+        mask-image: radial-gradient(
+          ellipse at 50% 55%,
+          #000 25%,
+          transparent 85%
+        );
+      }
+      .pt {
+        position: absolute;
+        font-weight: 800;
+        color: rgba(244, 247, 255, 0.09);
+        font-family: var(--math);
+        animation: drift var(--d, 30s) linear infinite;
+        animation-delay: var(--dl, 0s);
+      }
+      @keyframes drift {
+        from {
+          transform: translateY(40px) rotate(0);
+        }
+        50% {
+          transform: translateY(-40px) rotate(6deg);
+        }
+        to {
+          transform: translateY(40px) rotate(0);
+        }
+      }
+      body.calm .pt {
+        opacity: 0.25;
+      }
+      body.calm #bg {
+        opacity: 0.7;
+      }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 122px;
+        padding: 22px 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 20;
+        transition: opacity 0.3s;
+      }
+      .bolt {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--surf);
+        border: 3px solid var(--vio);
+        border-radius: 22px;
+        padding: 10px 26px 10px 18px;
+        color: var(--tx);
+        cursor: pointer;
+        min-height: 78px;
+      }
+      .bolt:hover {
+        background: #1f2750;
+      }
+      .boltTxt {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        line-height: 1.15;
+      }
+      .boltTxt b {
+        font-size: 28px;
+        color: var(--li);
+        letter-spacing: 0.04em;
+        font-weight: 800;
+      }
+      .tbtn .boltTxt {
+        font-size: 24px;
+        letter-spacing: 0.14em;
+      }
+      #stageId {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        color: rgba(244, 247, 255, 0.8);
+        text-transform: uppercase;
+      }
+      #stageId b {
+        color: var(--cy);
+        font-weight: 800;
+      }
+      #bar {
+        position: absolute;
+        left: 48px;
+        right: 48px;
+        bottom: 26px;
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        z-index: 20;
+        transition: opacity 0.3s;
+      }
+      #bar .grp {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      #scene {
+        position: absolute;
+        left: 90px;
+        right: 90px;
+        top: 128px;
+        bottom: 128px;
+        z-index: 5;
+      }
+      #cue {
+        position: absolute;
+        left: 50%;
+        top: 24px;
+        transform: translate(-50%, -30px);
+        z-index: 30;
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: #080b20;
+        background: var(--cy);
+        padding: 12px 44px;
+        border-radius: 999px;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.35s;
+        box-shadow: 0 0 50px rgba(32, 217, 255, 0.45);
+      }
+      #cue.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      #vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 8;
+        background: radial-gradient(
+          ellipse at 50% 50%,
+          transparent 38%,
+          rgba(3, 4, 14, 0.82) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      body.spot #vignette {
+        opacity: 1;
+      }
+      body.spot #hud,
+      body.spot #bar {
+        opacity: 0.22;
+      }
+      body.spot #hud:hover,
+      body.spot #bar:hover,
+      body.spot #hud:focus-within,
+      body.spot #bar:focus-within {
+        opacity: 1;
+      }
+      body.spot .pt {
+        opacity: 0;
+      }
+      body.hide-timer .timer {
+        display: none !important;
+      }
+      body.spot .spotbtn {
+        border-color: var(--cy);
+        color: var(--cy);
+      }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        font-size: 28px;
+        font-weight: 750;
+        padding: 18px 40px;
+        border-radius: 18px;
+        border: 3px solid var(--vio);
+        background: var(--vio);
+        color: #fff;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition:
+          transform 0.12s,
+          box-shadow 0.2s,
+          background 0.2s;
+        line-height: 1.1;
+      }
+      .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(124, 58, 237, 0.45);
+      }
+      .btn:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+      .btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .btn.ghost {
+        background: transparent;
+        border-color: rgba(244, 247, 255, 0.4);
+        color: var(--tx);
+      }
+      .btn.cy {
+        background: var(--cy);
+        border-color: var(--cy);
+        color: #06102a;
+      }
+      .btn.li {
+        background: var(--li);
+        border-color: var(--li);
+        color: #0a1304;
+      }
+      .btn.coral {
+        background: var(--co);
+        border-color: var(--co);
+        color: #2a0710;
+      }
+      .btn.sm {
+        font-size: 22px;
+        padding: 12px 24px;
+        border-radius: 14px;
+      }
+      .btn.big {
+        font-size: 34px;
+        padding: 22px 54px;
+        border-radius: 22px;
+        font-weight: 800;
+      }
+      .btn.on {
+        border-color: var(--cy);
+        color: var(--cy);
+      }
+      .btn kbd {
+        font-size: 0.62em;
+        opacity: 0.7;
+        font-weight: 600;
+        margin-left: 8px;
+        border: 2px solid currentColor;
+        border-radius: 8px;
+        padding: 1px 8px;
+      }
+      :focus-visible {
+        outline: 5px solid var(--cy);
+        outline-offset: 4px;
+      }
+      .row {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* ---------- type ---------- */
+      .mx {
+        font-family: var(--math);
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+      }
+      sup {
+        font-size: 0.6em;
+        line-height: 0;
+        vertical-align: 0.62em;
+        font-weight: 800;
+      }
+      .c-cy {
+        color: var(--cy);
+      }
+      .c-li {
+        color: var(--li);
+      }
+      .c-vi {
+        color: var(--vio-t);
+      }
+      .c-co {
+        color: var(--co);
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      .title {
+        font-size: 66px;
+        font-weight: 850;
+        line-height: 1.02;
+        text-transform: uppercase;
+        letter-spacing: -0.005em;
+      }
+      .kicker {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--cy);
+        text-transform: uppercase;
+      }
+      .tag {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--cy);
+      }
+      .panel {
+        background: var(--surf);
+        border: 3px solid rgba(124, 58, 237, 0.55);
+        border-radius: 30px;
+        padding: 30px 38px;
+      }
+      .panel.cyb {
+        border-color: var(--cy);
+      }
+      .panel.lib {
+        border-color: var(--li);
+      }
+      .lab {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: rgba(244, 247, 255, 0.7);
+        text-transform: uppercase;
+      }
+      .sup-note {
+        font-size: 26px;
+        font-weight: 600;
+        color: rgba(244, 247, 255, 0.85);
+      }
+      .illus {
+        display: inline-block;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        padding: 6px 18px;
+        border: 2px dashed var(--cy);
+        color: var(--cy);
+        border-radius: 999px;
+      }
+      .hintbox {
+        margin-top: 18px;
+        padding: 16px 26px;
+        border: 3px dashed var(--cy);
+        border-radius: 20px;
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--cy);
+        background: rgba(32, 217, 255, 0.07);
+      }
+
+      /* enter animations */
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(34px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        70% {
+          transform: scale(1.08);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(32, 217, 255, 0.55);
+        }
+        50% {
+          box-shadow: 0 0 0 14px rgba(32, 217, 255, 0);
+        }
+      }
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .enter .rise {
+        animation: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        animation-delay: calc(var(--i, 0) * 90ms);
+      }
+      .new {
+        animation: pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .fade {
+        animation: rise 0.5s both;
+      }
+      .skip * {
+        animation-duration: 0.01s !important;
+        animation-delay: 0s !important;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      .s1 .wrap {
+        position: relative;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1050px 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+      .hero {
+        font-size: 136px;
+        font-weight: 900;
+        line-height: 0.94;
+        letter-spacing: -0.02em;
+        display: flex;
+        flex-direction: column;
+        margin: 18px 0 26px;
+      }
+      .hero .l2 {
+        color: var(--cy);
+        text-shadow: 0 0 60px rgba(32, 217, 255, 0.5);
+      }
+      .hero .l3 {
+        background: linear-gradient(90deg, #fff, var(--vio-t));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .tagline {
+        font-size: 38px;
+        font-weight: 600;
+        margin-bottom: 38px;
+        color: rgba(244, 247, 255, 0.92);
+      }
+      .s1 .right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 26px;
+        position: relative;
+      }
+      .bigexpr {
+        font-size: 84px;
+        display: flex;
+        gap: 26px;
+        align-items: baseline;
+      }
+      .term {
+        display: inline-block;
+        animation: assemble 1.5s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+        animation-delay: var(--td, 0s);
+      }
+      @keyframes assemble {
+        from {
+          opacity: 0;
+          transform: translate(var(--dx), var(--dy)) rotate(var(--dr, 20deg))
+            scale(0.6);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .subexpr {
+        font-size: 56px;
+        color: var(--vio-t);
+      }
+      .zero {
+        font-size: 34px;
+        font-weight: 700;
+        padding: 10px 26px;
+        border: 3px solid var(--cy);
+        border-radius: 999px;
+        color: var(--cy);
+      }
+
+      /* ---------- Scene 2 ---------- */
+      .s2 .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .s2 svg {
+        width: 1740px;
+        height: 560px;
+        display: block;
+        margin-top: 6px;
+      }
+      .node {
+        cursor: pointer;
+      }
+      .node:focus-visible circle.nc {
+        stroke: #fff;
+        stroke-width: 8;
+      }
+      .node text {
+        font-family: var(--font);
+      }
+      .s2 .mission {
+        font-size: 38px;
+        font-weight: 650;
+        max-width: 1250px;
+        line-height: 1.25;
+      }
+
+      /* ---------- Scene 3 ---------- */
+      .s3 .cols {
+        display: grid;
+        grid-template-columns: 1020px 1fr;
+        gap: 44px;
+        height: 100%;
+      }
+      .s3 .q {
+        font-size: 50px;
+        font-weight: 800;
+        line-height: 1.12;
+        transition: all 0.4s;
+      }
+      .s3 .q.dim {
+        font-size: 34px;
+        opacity: 0.55;
+      }
+      .s3 .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .eqline {
+        font-size: 44px;
+      }
+      .challenge {
+        font-size: 50px;
+        font-weight: 850;
+        line-height: 1.14;
+        color: var(--li);
+      }
+      .s3 svg {
+        width: 100%;
+        height: auto;
+      }
+      .curve {
+        stroke-dasharray: 900;
+        stroke-dashoffset: 900;
+        animation: draw 1.6s 0.3s forwards;
+      }
+
+      /* ---------- Scene 4 ---------- */
+      .s4 .top {
+        display: grid;
+        grid-template-columns: 1fr 760px;
+        gap: 30px;
+      }
+      .s4 .big {
+        font-size: 78px;
+      }
+      .s4 .note {
+        font-size: 32px;
+        font-weight: 650;
+        margin-top: 16px;
+        color: var(--cy);
+      }
+      .algo {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .chip {
+        font-size: 46px;
+        font-weight: 850;
+        letter-spacing: 0.04em;
+        padding: 22px 34px;
+        border-radius: 22px;
+        background: var(--surf);
+        border: 3px solid var(--vio);
+      }
+      .chip.a1 {
+        border-color: var(--cy);
+        color: var(--cy);
+      }
+      .arrow {
+        font-size: 46px;
+        color: var(--vio-t);
+        font-weight: 800;
+      }
+      .remind {
+        font-size: 34px;
+        font-weight: 650;
+        margin-top: 20px;
+      }
+
+      /* ---------- Division grid ---------- */
+      .dg {
+        --cw: 170px;
+        --fs: 58px;
+        font-size: var(--fs);
+        font-family: var(--math);
+        font-weight: 700;
+      }
+      .grow {
+        display: grid;
+        grid-template-columns: calc(var(--cw) * 2) repeat(4, var(--cw));
+        align-items: center;
+        min-height: calc(var(--fs) * 1.5);
+      }
+      .cell {
+        text-align: center;
+        white-space: nowrap;
+        padding: 0 2px;
+        border-radius: 12px;
+        transition:
+          color 0.3s,
+          background 0.3s;
+      }
+      .cell.hl {
+        color: var(--cy);
+        background: rgba(32, 217, 255, 0.12);
+      }
+      .cell.fin {
+        color: var(--li);
+        background: rgba(183, 255, 60, 0.1);
+      }
+      .gut {
+        text-align: right;
+        padding-right: 22px;
+        white-space: nowrap;
+      }
+      .gm {
+        color: var(--cy);
+        font-weight: 800;
+      }
+      .qrow .cell {
+        font-size: 1.05em;
+      }
+      .qrow.fin .cell {
+        color: var(--li);
+      }
+      .rule {
+        min-height: 20px;
+      }
+      .rule .cells {
+        grid-column: 2/6;
+        border-top: 6px solid rgba(244, 247, 255, 0.85);
+        margin-top: 4px;
+      }
+      .dvd .gut {
+        border-right: 8px solid var(--vio);
+        padding-right: 26px;
+        border-bottom-left-radius: 0;
+        color: var(--vio-t);
+      }
+      .dvd .cellwrap {
+        grid-column: 2/6;
+        display: grid;
+        grid-template-columns: repeat(4, var(--cw));
+        border-top: 8px solid var(--vio);
+      }
+      .dvs .hl,
+      .dvs.on {
+        color: var(--cy);
+      }
+      .dvs.on {
+        background: rgba(32, 217, 255, 0.12);
+        border-radius: 12px;
+      }
+      .dg.small {
+        --cw: 120px;
+        --fs: 40px;
+      }
+      .dg.mini {
+        --cw: 100px;
+        --fs: 34px;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .s5 .cols {
+        display: grid;
+        grid-template-columns: 1090px 1fr;
+        gap: 36px;
+        height: 100%;
+      }
+      .dots {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .dots i {
+        width: 54px;
+        height: 12px;
+        border-radius: 6px;
+        background: rgba(244, 247, 255, 0.2);
+      }
+      .dots i.d {
+        background: var(--li);
+      }
+      .dots i.c {
+        background: var(--cy);
+      }
+      .callout .stg {
+        font-size: 30px;
+        font-weight: 850;
+        letter-spacing: 0.16em;
+        color: var(--cy);
+      }
+      .callout .calc {
+        font-size: 44px;
+        margin: 12px 0;
+      }
+      .callout .note {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      .flip {
+        margin-top: 14px;
+        padding: 14px 22px;
+        border: 3px solid var(--cy);
+        border-radius: 18px;
+        font-size: 34px;
+        background: rgba(32, 217, 255, 0.08);
+      }
+      .flip .t {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        color: var(--cy);
+        display: block;
+        margin-bottom: 4px;
+        font-family: var(--font);
+      }
+      .result {
+        display: flex;
+        gap: 30px;
+        margin-top: 14px;
+        font-size: 44px;
+      }
+      .result div {
+        padding: 14px 26px;
+        border: 3px solid var(--li);
+        border-radius: 20px;
+        color: var(--li);
+        background: rgba(183, 255, 60, 0.08);
+      }
+      .ctrls {
+        display: flex;
+        gap: 14px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      /* ---------- Scene 6 / options ---------- */
+      .s6 .cols {
+        display: grid;
+        grid-template-columns: 790px 1fr;
+        gap: 34px;
+        height: 100%;
+      }
+      .s6 .qt {
+        font-size: 70px;
+        font-weight: 900;
+        color: var(--cy);
+        line-height: 1;
+      }
+      .s6 .prompt {
+        font-size: 34px;
+        font-weight: 650;
+        margin: 12px 0 18px;
+      }
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .opt {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        text-align: left;
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--tx);
+        background: var(--surf);
+        border: 4px solid rgba(124, 58, 237, 0.6);
+        border-radius: 24px;
+        padding: 18px 28px;
+        cursor: pointer;
+        transition: all 0.2s;
+        line-height: 1.2;
+      }
+      .opt:hover:not(:disabled) {
+        border-color: var(--cy);
+        transform: translateX(6px);
+      }
+      .opt .lt {
+        flex: 0 0 74px;
+        height: 74px;
+        border-radius: 20px;
+        background: var(--vio);
+        display: grid;
+        place-items: center;
+        font-size: 42px;
+        font-weight: 900;
+      }
+      .opt.sel {
+        border-color: var(--cy);
+        background: rgba(32, 217, 255, 0.1);
+      }
+      .opt.ok {
+        border-color: var(--li);
+        background: rgba(183, 255, 60, 0.12);
+      }
+      .opt.ok .lt {
+        background: var(--li);
+        color: #0a1304;
+      }
+      .opt.bad {
+        border-color: var(--co);
+        background: rgba(255, 113, 138, 0.1);
+      }
+      .opt.bad .lt {
+        background: var(--co);
+        color: #2a0710;
+      }
+      .opt .mk {
+        margin-left: auto;
+        font-size: 30px;
+        font-weight: 850;
+      }
+      .opt:disabled {
+        cursor: default;
+        opacity: 1;
+      }
+      .fb {
+        margin-top: 16px;
+        padding: 20px 28px;
+        border-radius: 22px;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 1.3;
+        border: 3px solid;
+      }
+      .fb.ok {
+        border-color: var(--li);
+        background: rgba(183, 255, 60, 0.1);
+      }
+      .fb.bad {
+        border-color: var(--co);
+        background: rgba(255, 113, 138, 0.09);
+      }
+      .fb b {
+        font-weight: 850;
+        letter-spacing: 0.06em;
+      }
+
+      /* ---------- Scene 7 ---------- */
+      .s7 .cols {
+        display: grid;
+        grid-template-columns: 960px 1fr;
+        gap: 36px;
+        height: 100%;
+      }
+      .tabs {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        font-size: 24px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        padding: 12px 24px;
+        border-radius: 14px;
+        border: 3px solid rgba(244, 247, 255, 0.3);
+        background: transparent;
+        color: var(--tx);
+        cursor: pointer;
+      }
+      .tab.on {
+        background: var(--vio);
+        border-color: var(--vio);
+      }
+      .work {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 44px;
+      }
+      .work .ln {
+        padding: 10px 20px;
+        border-radius: 16px;
+        background: rgba(244, 247, 255, 0.05);
+      }
+      .badt {
+        color: var(--co);
+        text-decoration: underline wavy var(--co);
+        text-underline-offset: 8px;
+      }
+      .goodt {
+        color: var(--li);
+      }
+      .s7 .qt {
+        font-size: 62px;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--cy);
+      }
+      .cats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .cats .opt {
+        font-size: 30px;
+        padding: 16px 20px;
+      }
+
+      /* ---------- Timer / Scene 8 ---------- */
+      .timer {
+        text-align: center;
+        padding: 18px 20px;
+        border-radius: 30px;
+        background: var(--surf);
+        border: 3px solid var(--vio);
+      }
+      .tnum {
+        font-size: 190px;
+        font-weight: 900;
+        line-height: 1;
+        font-family: var(--font);
+        font-variant-numeric: tabular-nums;
+        color: var(--tx);
+      }
+      .tstat {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        min-height: 36px;
+        color: rgba(244, 247, 255, 0.7);
+      }
+      .timer.low {
+        border-color: var(--co);
+      }
+      .timer.low .tnum {
+        color: var(--co);
+      }
+      .timer.over {
+        border-color: var(--co);
+        background: rgba(255, 113, 138, 0.14);
+      }
+      .timer.over .tstat {
+        color: var(--co);
+        font-size: 40px;
+      }
+      .timer.run {
+        border-color: var(--cy);
+      }
+      .timer.sm .tnum {
+        font-size: 100px;
+      }
+      .presets {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 12px;
+      }
+      .presets .btn {
+        padding: 10px 20px;
+        font-size: 24px;
+      }
+      .s8 .rtabs {
+        display: flex;
+        gap: 12px;
+      }
+      .s8 .rtab {
+        flex: 1;
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: 0.06em;
+        padding: 12px 8px;
+        border-radius: 16px;
+        border: 3px solid rgba(244, 247, 255, 0.25);
+        background: transparent;
+        color: var(--tx);
+        cursor: pointer;
+        line-height: 1.1;
+      }
+      .s8 .rtab.on {
+        background: var(--vio);
+        border-color: var(--vio);
+      }
+      .s8 .rtab.dn {
+        border-color: var(--li);
+        color: var(--li);
+      }
+      .s8 .mid {
+        display: grid;
+        grid-template-columns: 1fr 620px;
+        gap: 26px;
+        margin-top: 16px;
+      }
+      .s8 .qpanel {
+        min-height: 340px;
+      }
+      .s8 .qline {
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+      .s8 .qmath {
+        font-size: 62px;
+        margin-top: 12px;
+        color: var(--cy);
+      }
+      .s8 .ans {
+        margin-top: 14px;
+        padding: 14px 24px;
+        border: 3px solid var(--li);
+        border-radius: 20px;
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--li);
+        background: rgba(183, 255, 60, 0.09);
+      }
+      .s8 .ctl {
+        display: flex;
+        gap: 14px;
+        margin: 16px 0;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .teams {
+        display: grid;
+        gap: 22px;
+      }
+      .team {
+        position: relative;
+        background: var(--surf);
+        border: 4px solid rgba(244, 247, 255, 0.2);
+        border-radius: 28px;
+        padding: 14px 24px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        cursor: pointer;
+      }
+      .team.act {
+        border-color: var(--cy);
+        box-shadow: 0 0 40px rgba(32, 217, 255, 0.25);
+      }
+      .team .nm {
+        font-size: 34px;
+        font-weight: 850;
+        letter-spacing: 0.1em;
+      }
+      .team .sc {
+        font-size: 132px;
+        font-weight: 900;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        grid-row: span 2;
+      }
+      .team .adj {
+        display: flex;
+        gap: 10px;
+      }
+      .team .adj .btn {
+        padding: 10px 20px;
+        font-size: 26px;
+      }
+      .atag {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        color: var(--cy);
+      }
+
+      /* ---------- Scene 9 ---------- */
+      .s9 .hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .s9 .boss {
+        font-size: 84px;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.01em;
+      }
+      .s9 .boss span {
+        display: block;
+        font-size: 32px;
+        letter-spacing: 0.2em;
+        color: var(--co);
+        font-weight: 800;
+      }
+      .hp {
+        display: flex;
+        gap: 10px;
+      }
+      .hp i {
+        font-style: normal;
+        width: 74px;
+        height: 60px;
+        border-radius: 14px;
+        border: 3px solid rgba(244, 247, 255, 0.3);
+        display: grid;
+        place-items: center;
+        font-size: 28px;
+        font-weight: 850;
+      }
+      .hp i.c {
+        background: var(--cy);
+        border-color: var(--cy);
+        color: #06102a;
+      }
+      .hp i.d {
+        background: var(--li);
+        border-color: var(--li);
+        color: #0a1304;
+      }
+      .s9 .prob {
+        font-size: 62px;
+        text-align: center;
+        margin: 12px 0;
+      }
+      .s9 .cols {
+        display: grid;
+        grid-template-columns: 1fr 700px;
+        gap: 30px;
+      }
+      .s9 .st {
+        font-size: 28px;
+        font-weight: 850;
+        letter-spacing: 0.16em;
+        color: var(--cy);
+      }
+      .s9 .sq {
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin: 6px 0 14px;
+      }
+      .s9 .opt {
+        font-size: 34px;
+        padding: 12px 24px;
+      }
+      .s9 .opt .lt {
+        flex-basis: 58px;
+        height: 58px;
+        font-size: 34px;
+      }
+      .wk {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 30px;
+      }
+      .wk .w {
+        padding: 10px 18px;
+        border-left: 8px solid var(--li);
+        background: rgba(183, 255, 60, 0.07);
+        border-radius: 12px;
+      }
+      .scorechips {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .chipt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--surf);
+        border: 3px solid rgba(244, 247, 255, 0.25);
+        border-radius: 18px;
+        padding: 6px 14px;
+        font-size: 26px;
+        font-weight: 800;
+      }
+      .chipt b {
+        font-size: 40px;
+        min-width: 44px;
+        text-align: center;
+      }
+      .chipt .btn {
+        padding: 4px 14px;
+        font-size: 24px;
+        border-radius: 10px;
+      }
+      .verify {
+        font-size: 32px;
+        line-height: 1.5;
+      }
+
+      /* ---------- Scene 10 ---------- */
+      .s10 .acts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-top: 22px;
+      }
+      .act {
+        padding: 26px 26px 30px;
+        border-radius: 28px;
+        background: var(--surf);
+        border: 3px solid var(--vio);
+      }
+      .act .n {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--vio-t);
+        letter-spacing: 0.16em;
+      }
+      .act .v {
+        font-size: 52px;
+        font-weight: 900;
+        margin: 6px 0;
+        letter-spacing: 0.02em;
+      }
+      .act .d {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .signs {
+        margin-top: 22px;
+        font-size: 46px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        padding: 16px 34px;
+        border-radius: 20px;
+        background: var(--cy);
+        color: #06102a;
+        display: inline-block;
+      }
+      .ident {
+        font-size: 60px;
+      }
+      .s10 .idl {
+        font-size: 46px;
+        line-height: 1.5;
+      }
+
+      /* ---------- Scene 11 ---------- */
+      .s11 .qn {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        color: var(--cy);
+      }
+      .s11 .qq {
+        font-size: 66px;
+        font-weight: 850;
+        line-height: 1.1;
+        margin: 14px 0 26px;
+        max-width: 1500px;
+      }
+      .s11 .ans {
+        font-size: 46px;
+        font-weight: 800;
+        line-height: 1.2;
+        padding: 26px 34px;
+        border: 4px solid var(--li);
+        border-radius: 28px;
+        background: rgba(183, 255, 60, 0.09);
+        color: var(--li);
+        max-width: 1500px;
+      }
+
+      /* ---------- Scene 12 ---------- */
+      .s12 .cols {
+        display: grid;
+        grid-template-columns: 1fr 520px;
+        gap: 40px;
+        align-items: center;
+        height: 100%;
+      }
+      .s12 .big {
+        font-size: 96px;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--li);
+        text-shadow: 0 0 50px rgba(183, 255, 60, 0.35);
+      }
+      .s12 .res {
+        display: flex;
+        gap: 30px;
+        margin: 20px 0;
+        font-size: 56px;
+      }
+      .s12 .res div {
+        padding: 18px 32px;
+        border: 4px solid var(--li);
+        border-radius: 24px;
+        background: rgba(183, 255, 60, 0.08);
+      }
+      .s12 .idl {
+        font-size: 42px;
+        line-height: 1.4;
+      }
+      .s12 .refl {
+        font-size: 46px;
+        font-weight: 850;
+        line-height: 1.15;
+        color: var(--cy);
+        margin-top: 14px;
+      }
+      .ring circle {
+        stroke-dasharray: 700;
+        stroke-dashoffset: 700;
+        animation: draw 1.2s 0.2s forwards;
+      }
+      .ring path {
+        stroke-dasharray: 200;
+        stroke-dashoffset: 200;
+        animation: draw 0.7s 1s forwards;
+      }
+      .pathdots {
+        display: flex;
+        gap: 8px;
+        margin: 14px 0 4px;
+      }
+      .pathdots i {
+        width: 40px;
+        height: 16px;
+        border-radius: 8px;
+        background: rgba(244, 247, 255, 0.2);
+      }
+      .pathdots i.d {
+        background: var(--li);
+      }
+
+      /* ---------- overlays ---------- */
+      .ov {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        background: rgba(5, 7, 22, 0.82);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+      }
+      .ov.open {
+        display: flex;
+      }
+      .navbox {
+        width: 1560px;
+        background: #101634;
+        border: 4px solid var(--vio);
+        border-radius: 36px;
+        padding: 36px 46px;
+      }
+      .navhead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .navtitle {
+        font-size: 52px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+      }
+      .navsub {
+        font-size: 26px;
+        font-weight: 600;
+        color: rgba(244, 247, 255, 0.75);
+        margin-top: 4px;
+      }
+      .navbar {
+        height: 14px;
+        border-radius: 7px;
+        background: rgba(244, 247, 255, 0.15);
+        margin: 22px 0;
+      }
+      .navbar i {
+        display: block;
+        height: 100%;
+        border-radius: 7px;
+        background: var(--li);
+        transition: width 0.5s;
+        width: 0;
+      }
+      #navlist {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(6, auto);
+        gap: 12px 34px;
+      }
+      #navlist button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        text-align: left;
+        background: transparent;
+        border: 3px solid rgba(244, 247, 255, 0.3);
+        border-radius: 20px;
+        padding: 12px 20px;
+        color: var(--tx);
+        font-size: 26px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      #navlist button:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      #navlist .ic {
+        flex: 0 0 58px;
+        height: 58px;
+        border-radius: 50%;
+        border: 3px solid rgba(244, 247, 255, 0.5);
+        display: grid;
+        place-items: center;
+        font-size: 26px;
+        font-weight: 850;
+      }
+      #navlist .st {
+        margin-left: auto;
+        font-size: 18px;
+        letter-spacing: 0.14em;
+        font-weight: 800;
+      }
+      #navlist .done {
+        border-color: var(--li);
+      }
+      #navlist .done .ic {
+        background: var(--li);
+        border-color: var(--li);
+        color: #0a1304;
+      }
+      #navlist .done .st {
+        color: var(--li);
+      }
+      #navlist .cur {
+        border-color: var(--cy);
+        background: rgba(32, 217, 255, 0.1);
+        animation: pulse 2s infinite;
+      }
+      #navlist .cur .ic {
+        border-color: var(--cy);
+        color: var(--cy);
+      }
+      #navlist .cur .st {
+        color: var(--cy);
+      }
+      .box {
+        background: #101634;
+        border: 4px solid var(--vio);
+        border-radius: 32px;
+        padding: 44px 56px;
+        text-align: center;
+        max-width: 900px;
+      }
+      .box p {
+        font-size: 34px;
+        font-weight: 650;
+        margin-bottom: 30px;
+        line-height: 1.3;
+      }
+      .box .row {
+        justify-content: center;
+      }
+      .bigword {
+        font-size: 110px;
+        font-weight: 900;
+        color: var(--cy);
+        margin-bottom: 10px;
+      }
+      .side {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 700px;
+        z-index: 45;
+        background: #0d1330;
+        border-left: 4px solid var(--vio);
+        padding: 28px 34px;
+        overflow: auto;
+        transform: translateX(105%);
+        transition: transform 0.3s;
+      }
+      .side.open {
+        transform: none;
+      }
+      .side h2 {
+        font-size: 38px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .side h3 {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        color: var(--cy);
+        margin: 22px 0 10px;
+      }
+      .tg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .tg .btn {
+        font-size: 21px;
+        padding: 14px 12px;
+        border-radius: 14px;
+      }
+      .side select {
+        width: 100%;
+        font-size: 24px;
+        font-weight: 700;
+        padding: 12px;
+        border-radius: 12px;
+        background: var(--surf);
+        color: var(--tx);
+        border: 3px solid var(--vio);
+      }
+      .sc-list {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.7;
+        color: rgba(244, 247, 255, 0.85);
+      }
+      .sc-list kbd {
+        display: inline-block;
+        min-width: 36px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 800;
+        border: 2px solid var(--cy);
+        color: var(--cy);
+        border-radius: 8px;
+        padding: 0 8px;
+        margin-right: 8px;
+      }
+
+      /* ---------- External activities dock ---------- */
+      #dock {
+        position: absolute;
+        right: 48px;
+        bottom: 132px;
+        z-index: 25;
+        display: flex;
+        gap: 14px;
+        transition: opacity 0.3s;
+      }
+      body.spot #dock {
+        opacity: 0.22;
+      }
+      body.spot #dock:hover,
+      body.spot #dock:focus-within {
+        opacity: 1;
+      }
+      .dockbtn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        padding: 12px 22px;
+        min-height: 60px;
+        border-radius: 18px;
+        border: 3px solid var(--vio);
+        background: var(--surf);
+        color: var(--tx);
+        cursor: pointer;
+        transition:
+          transform 0.12s,
+          box-shadow 0.2s,
+          background 0.2s;
+        font-family: inherit;
+      }
+      .dockbtn:hover {
+        transform: translateY(-2px);
+        background: #1f2750;
+      }
+      .dockbtn.game {
+        border-color: var(--li);
+        color: var(--li);
+      }
+      .dockbtn.game:hover {
+        box-shadow: 0 8px 28px rgba(183, 255, 60, 0.35);
+      }
+      .dockbtn.practice {
+        border-color: var(--cy);
+        color: var(--cy);
+      }
+      .dockbtn.practice:hover {
+        box-shadow: 0 8px 28px rgba(32, 217, 255, 0.35);
+      }
+      .dockbtn.video {
+        border-color: var(--co);
+        color: var(--co);
+      }
+      .dockbtn.video:hover {
+        box-shadow: 0 8px 28px rgba(255, 113, 138, 0.35);
+      }
+      .dockbtn svg {
+        flex: 0 0 auto;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01s !important;
+          animation-delay: 0s !important;
+          transition-duration: 0.01s !important;
+        }
+        .pt {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div id="bg" aria-hidden="true"></div>
+
+      <header id="hud">
+        <button
+          id="btnNav"
+          class="bolt"
+          data-act="nav"
+          aria-label="Open learning navigator (L)"
+        >
+          <svg viewBox="0 0 48 64" width="40" height="52" aria-hidden="true">
+            <path
+              d="M28 2 6 36h14l-4 26 26-38H28z"
+              fill="#20D9FF"
+              stroke="#F4F7FF"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="boltTxt">LEARNING PATH<b id="progTxt">0 / 12</b></span>
+        </button>
+        <div id="stageId" aria-live="polite"></div>
+        <button
+          id="btnTeacher"
+          class="bolt tbtn"
+          data-act="teacher"
+          aria-label="Open teacher controls"
+        >
+          <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+            <path
+              d="M6 12h36M6 24h36M6 36h36"
+              stroke="#F4F7FF"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span class="boltTxt">TEACHER</span>
+        </button>
+      </header>
+
+      <main id="scene"></main>
+      <footer id="bar"></footer>
+
+      <div id="cue" aria-live="polite"></div>
+      <div id="vignette"></div>
+
+      <!-- fixed extra-activity dock -->
+      <div id="dock" aria-label="Extra activities">
+        <button class="dockbtn game" data-act="game" aria-label="Open game (G)">
+          <svg
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 12h4M8 10v4" />
+            <circle cx="16" cy="11" r="1.3" fill="currentColor" />
+            <circle cx="18.6" cy="14" r="1.3" fill="currentColor" />
+            <rect x="2" y="6" width="20" height="12" rx="5" />
+          </svg>
+          GAME
+        </button>
+        <button
+          class="dockbtn practice"
+          data-act="practice"
+          aria-label="Open practice (P)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="26"
+            height="26"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 20h4L20 8l-4-4L4 16z" />
+            <path d="M14 6l4 4" />
+          </svg>
+          PRACTICE
+        </button>
+        <button
+          class="dockbtn video"
+          data-act="video"
+          aria-label="Open video (V)"
+        >
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          VIDEO
+        </button>
+      </div>
+
+      <section id="nav" class="ov" aria-label="Learning navigator">
+        <div class="navbox">
+          <div class="navhead">
+            <div>
+              <div class="navtitle">LEARNING JOURNEY</div>
+              <div class="navsub" id="navsub"></div>
+            </div>
+            <button class="btn ghost" data-act="closeNav">CLOSE ✕</button>
+          </div>
+          <div class="navbar"><i id="navfill"></i></div>
+          <ol id="navlist"></ol>
+        </div>
+      </section>
+
+      <aside id="teacher" class="side" aria-label="Teacher controls"></aside>
+
+      <section id="confirm" class="ov">
+        <div class="box">
+          <p id="cmsg"></p>
+          <div class="row">
+            <button class="btn ghost" data-act="cno">CANCEL</button
+            ><button class="btn coral" data-act="cyes">YES, RESET</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pausev" class="ov">
+        <div class="box">
+          <div class="bigword">PAUSED</div>
+          <p>All timers are stopped.</p>
+          <button class="btn li big" data-act="pause">RESUME</button>
+        </div>
+      </section>
+    </div>
+    <script>
+      /* POWER CREATIVE ALGEBRA — Division of Polynomials
+   Vanilla JS, no dependencies. Sections:
+   1 MATH  2 STATE  3 CONTROLLERS (Timer, Score, Reveal, Sound)  4 SCENES  5 RENDERER  6 ACTIONS & INPUT */
+      (() => {
+        "use strict";
+        const $ = (s, r = document) => r.querySelector(s);
+        const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+        const M = (s) =>
+          String(s)
+            .replace(/\^(\d)/g, "<sup>$1</sup>")
+            .replace(/-/g, "−");
+        const clone = (o) => JSON.parse(JSON.stringify(o));
+        const B = (act, label, cls = "", data = "") =>
+          `<button class="btn ${cls}" data-act="${act}" ${data}>${label}</button>`;
+
+        /* =====================================================================
+   1. MATH — verified problem data (coefficients, highest degree first)
+   ===================================================================== */
+        const EX = {
+          dvd: [2, -5, 0, -2],
+          dsr: [2, -1, -1],
+          q: [1, -2],
+          r: [-1, -4],
+        };
+        const BOSS = {
+          dvd: [3, 2, -7, 5],
+          dsr: [1, 1, -1],
+          q: [3, -1],
+          r: [-3, 4],
+        };
+        const ROWS = {
+          dvd: [2, -5, 0, -2],
+          p1: [2, -1, -1, null],
+          r1: [null, -4, 1, -2],
+          p2: [null, -4, 2, 2],
+          r2: [null, null, -1, -4],
+        };
+
+        function polyDiv(n, d) {
+          n = n.slice();
+          const q = [];
+          while (n.length >= d.length) {
+            const c = n[0] / d[0];
+            q.push(c);
+            for (let i = 0; i < d.length; i++) n[i] -= c * d[i];
+            n.shift();
+          }
+          return { q, r: n };
+        }
+        const polyMul = (a, b) => {
+          const r = Array(a.length + b.length - 1).fill(0);
+          a.forEach((x, i) => b.forEach((y, j) => (r[i + j] += x * y)));
+          return r;
+        };
+        const polyAdd = (a, b) => {
+          const L = Math.max(a.length, b.length);
+          const A = Array(L - a.length)
+              .fill(0)
+              .concat(a),
+            Bb = Array(L - b.length)
+              .fill(0)
+              .concat(b);
+          return A.map((x, i) => x + Bb[i]);
+        };
+        const polySub = (a, b) =>
+          polyAdd(
+            a,
+            b.map((x) => -x),
+          );
+        const eq = (a, b) =>
+          a.length === b.length && a.every((x, i) => x === b[i]);
+        const degOf = (p) => {
+          const t = p.slice();
+          while (t.length && t[0] === 0) t.shift();
+          return t.length - 1;
+        };
+        const trim = (p) => {
+          const t = p.slice();
+          while (t.length > 1 && t[0] === 0) t.shift();
+          return t;
+        };
+
+        function verify() {
+          const out = [],
+            t = (n, ok) => out.push({ n, ok: !!ok });
+          for (const [nm, P] of [
+            ["example", EX],
+            ["boss", BOSS],
+          ]) {
+            const { q, r } = polyDiv(P.dvd, P.dsr);
+            t(nm + " quotient", eq(q, P.q));
+            t(nm + " remainder", eq(trim(r), P.r));
+            t(
+              nm + " identity",
+              eq(trim(polyAdd(polyMul(P.dsr, P.q), P.r)), P.dvd),
+            );
+            t(
+              nm + " remainder degree < divisor degree",
+              degOf(P.r) < degOf(P.dsr),
+            );
+          }
+          const pad = (a, n) =>
+            Array(n - a.length)
+              .fill(0)
+              .concat(a);
+          const p1 = polyMul(EX.dsr, [1]);
+          t("p1 row", eq(p1, ROWS.p1.slice(0, 3)));
+          const r1 = polySub(EX.dvd, p1.concat([0])).slice(1);
+          t("r1 row", eq(r1, ROWS.r1.slice(1)));
+          const p2 = polyMul(EX.dsr, [-2]);
+          t("p2 row", eq(p2, ROWS.p2.slice(1, 4)));
+          const r2 = polySub(r1, p2).slice(1);
+          t("r2 row", eq(r2, ROWS.r2.slice(2)));
+          t("dividend row has 0x", ROWS.dvd[2] === 0);
+          const b1 = polyMul(BOSS.dsr, [3]);
+          t("boss product 1", eq(b1, [3, 3, -3]));
+          const bs1 = polySub(BOSS.dvd, b1.concat([0])).slice(1);
+          t("boss subtraction 1", eq(bs1, [-1, -4, 5]));
+          const b2 = polyMul(BOSS.dsr, [-1]);
+          t("boss product 2", eq(b2, [-1, -1, 1]));
+          t("boss remainder", eq(polySub(bs1, b2).slice(1), [-3, 4]));
+          t(
+            "boss expanded product",
+            eq(polyMul(BOSS.dsr, BOSS.q), [3, 2, -4, 1]),
+          );
+          return out;
+        }
+
+        /* =====================================================================
+   2. STATE — single source of truth
+   ===================================================================== */
+        const KEY = "pca.v1";
+        const DEF = () => ({
+          scene: 1,
+          done: {},
+          fired: {},
+          visited: { 1: 1 },
+          teams: 2,
+          active: 0,
+          scores: [0, 0, 0],
+          bonus: 1,
+          preset: 30,
+          s3: 0,
+          s4: 0,
+          s5: { step: 0, full: false },
+          s6: { pick: null, expl: false },
+          s7: { ex: 0, pick: [null, null], fix: [false, false] },
+          s8: { round: 0, rev: [false, false, false, false, false] },
+          s9: {
+            stage: 0,
+            ok: [false, false, false, false, false],
+            pick: null,
+            hints: [0, 0, 0, 0, 0],
+            sol: false,
+            timer: false,
+          },
+          s10: 0,
+          s11: { q: 0, rev: [false, false, false] },
+          s12: 0,
+          ui: { sound: false, timerVis: true, spot: false, auto: false },
+        });
+        function merge(d, r) {
+          if (Array.isArray(d))
+            return Array.isArray(r) && r.length === d.length ? r : d;
+          if (d && typeof d === "object") {
+            if (!Object.keys(d).length)
+              return r && typeof r === "object" ? r : d;
+            const o = {};
+            for (const k in d)
+              o[k] =
+                r && typeof r === "object" && k in r ? merge(d[k], r[k]) : d[k];
+            return o;
+          }
+          return typeof r === typeof d ? r : d;
+        }
+        function load() {
+          try {
+            const r = JSON.parse(localStorage.getItem(KEY));
+            if (r && typeof r === "object") return merge(DEF(), r);
+          } catch (e) {}
+          return DEF();
+        }
+        let S = load();
+        const save = () => {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(S));
+          } catch (e) {}
+        };
+        let paused = false,
+          hintOn = false,
+          introSkip = false;
+
+        const COND = {
+          3: () => S.s3 >= 3,
+          4: () => S.s4 >= 3,
+          5: () => S.s5.step >= 7,
+          6: () => S.s6.pick === "A" || S.s6.expl,
+          7: () => S.s7.fix[0],
+          8: () => S.s8.rev.every(Boolean),
+          9: () => S.s9.sol,
+          10: () => S.s10 >= 2,
+          11: () => S.s11.rev.every(Boolean),
+          12: () => S.s12 >= 2,
+        };
+        function finish(n) {
+          if (S.fired[n]) return;
+          S.fired[n] = true;
+          S.done[n] = true;
+          sfx("done");
+          if (S.ui.auto && n === S.scene && n < 12)
+            setTimeout(() => {
+              if (S.scene === n) go(n + 1);
+            }, 1400);
+        }
+        function autoCheck() {
+          const n = S.scene;
+          if (COND[n] && COND[n]()) finish(n);
+        }
+
+        /* =====================================================================
+   3. CONTROLLERS
+   ===================================================================== */
+        let AC = null;
+        function sfx(kind) {
+          if (!S.ui.sound) return;
+          try {
+            AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+            const seq =
+              {
+                whoosh: [
+                  [320, 0.09],
+                  [520, 0.09],
+                ],
+                ok: [
+                  [523, 0.1],
+                  [659, 0.1],
+                  [784, 0.16],
+                ],
+                warn: [[880, 0.12]],
+                done: [
+                  [392, 0.1],
+                  [523, 0.1],
+                  [659, 0.1],
+                  [784, 0.22],
+                ],
+                bad: [[220, 0.18]],
+              }[kind] || [];
+            let t = AC.currentTime;
+            seq.forEach(([f, d]) => {
+              const o = AC.createOscillator(),
+                g = AC.createGain();
+              o.type = "sine";
+              o.frequency.value = f;
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.12, t + 0.02);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+              o.connect(g).connect(AC.destination);
+              o.start(t);
+              o.stop(t + d + 0.02);
+              t += d;
+            });
+          } catch (e) {}
+        }
+
+        const T = {
+          ms: S.preset * 1000,
+          end: 0,
+          id: 0,
+          st: "idle",
+          secs() {
+            return Math.ceil(this.ms / 1000);
+          },
+          start() {
+            if (paused || this.st === "running") return;
+            if (this.st === "over" || this.st === "stopped")
+              this.ms = S.preset * 1000;
+            this.st = "running";
+            this.end = performance.now() + this.ms;
+            clearInterval(this.id);
+            this.id = setInterval(() => this.tick(), 100);
+            upd();
+          },
+          tick() {
+            const prev = this.secs();
+            this.ms = Math.max(0, this.end - performance.now());
+            if (this.ms <= 0) {
+              clearInterval(this.id);
+              this.id = 0;
+              this.st = "over";
+              sfx("warn");
+            } else if (this.secs() !== prev && this.secs() <= 3) sfx("warn");
+            upd();
+          },
+          pause() {
+            if (this.st !== "running") return;
+            clearInterval(this.id);
+            this.id = 0;
+            this.ms = Math.max(0, this.end - performance.now());
+            this.st = "paused";
+            upd();
+          },
+          toggle() {
+            this.st === "running" ? this.pause() : this.start();
+          },
+          reset() {
+            clearInterval(this.id);
+            this.id = 0;
+            this.ms = S.preset * 1000;
+            this.st = "idle";
+            upd();
+          },
+          stop() {
+            clearInterval(this.id);
+            this.id = 0;
+            this.st = "stopped";
+            upd();
+          },
+          setPreset(p) {
+            S.preset = p;
+            this.reset();
+            save();
+            render(false);
+          },
+        };
+        function timerHTML(cls = "") {
+          return `<div class="timer ${cls}" data-timer role="timer" aria-live="off"><div class="tnum">${T.secs()}</div><div class="tstat"></div></div>`;
+        }
+        function timerCtl(sm) {
+          const lbl =
+            T.st === "running"
+              ? "PAUSE"
+              : T.st === "paused"
+                ? "RESUME"
+                : "START";
+          return `<div class="presets">${[10, 20, 30, 45].map((p) => B("preset", p + "s", "ghost" + (S.preset === p ? " on" : ""), `data-v="${p}"`)).join("")}</div>
+  <div class="presets">${B("tToggle", lbl + " <kbd>Space</kbd>", "cy", 'data-tt="1"')}${B("tReset", "RESET", "ghost")}${B("tStop", "STOP", "ghost")}</div>`;
+        }
+        function upd() {
+          const lab = {
+            idle: "READY",
+            running: "",
+            paused: "PAUSED",
+            stopped: "STOPPED",
+            over: "TIME'S UP",
+          }[T.st];
+          $$("[data-timer]").forEach((el) => {
+            $(".tnum", el).textContent = T.secs();
+            $(".tstat", el).textContent = lab;
+            el.classList.toggle(
+              "low",
+              T.secs() <= 5 &&
+                (T.st === "running" || T.st === "paused") &&
+                T.ms > 0,
+            );
+            el.classList.toggle("over", T.st === "over");
+            el.classList.toggle("run", T.st === "running");
+          });
+          const tt = $("[data-tt]");
+          if (tt)
+            tt.innerHTML =
+              (T.st === "running"
+                ? "PAUSE"
+                : T.st === "paused"
+                  ? "RESUME"
+                  : "START") + " <kbd>Space</kbd>";
+        }
+
+        const TEAMS = [
+          { n: "TEAM ALPHA", c: "var(--cy)" },
+          { n: "TEAM BETA", c: "var(--vio-t)" },
+          { n: "TEAM GAMMA", c: "var(--tx)" },
+        ];
+        const Score = {
+          add(i, v) {
+            S.scores[i] = Math.max(-99, Math.min(999, S.scores[i] + v));
+            save();
+            sfx(v > 0 ? "ok" : "warn");
+            render(false);
+          },
+        };
+        function scoreChips() {
+          return `<div class="scorechips">${TEAMS.slice(0, S.teams)
+            .map(
+              (t, i) =>
+                `<div class="chipt" style="border-color:${S.active === i ? "var(--cy)" : ""}"><span style="color:${t.c}">${t.n.split(" ")[1]}</span>${B("score", "−", "ghost", `data-i="${i}" data-v="-1" aria-label="Remove point"`)}<b>${S.scores[i]}</b>${B("score", "+", "cy", `data-i="${i}" data-v="1" aria-label="Add point"`)}</div>`,
+            )
+            .join("")}</div>`;
+        }
+
+        /* =====================================================================
+   4. SCENES
+   ===================================================================== */
+        const SC = {};
+        const NAMES = [
+          "Mission Briefing",
+          "Learning Map",
+          "The Hook: Why Polynomial Division?",
+          "Meet the Division Engine",
+          "Guided Division",
+          "Predict the Next Move",
+          "Error Detection Arena",
+          "Team Battle",
+          "Boss Challenge",
+          "Mathematical Debrief",
+          "Exit Challenge",
+          "Victory and Reflection",
+        ];
+        const CUES = {
+          3: "THINK FIRST",
+          6: "THINK FIRST",
+          7: "DEFEND YOUR ANSWER",
+          8: "DISCUSS WITH YOUR TEAM",
+          9: "DISCUSS WITH YOUR TEAM",
+          11: "RAISE YOUR HAND",
+        };
+
+        function tm(c, d, first) {
+          if (typeof c === "string") return c;
+          const neg = c < 0,
+            a = Math.abs(c),
+            v = d === 0 ? "" : d === 1 ? "x" : `x<sup>${d}</sup>`;
+          const body = a === 1 && d > 0 ? v : a + v;
+          return (neg ? "−" : first ? "" : "+") + body;
+        }
+        function gridRow(coefs, o = {}) {
+          let seen = false;
+          const cells = [3, 2, 1, 0]
+            .map((d, i) => {
+              const c = coefs[i];
+              if (c == null) return '<span class="cell"></span>';
+              const f = !seen;
+              seen = true;
+              const h =
+                o.hl === "all" || (Array.isArray(o.hl) && o.hl.includes(d));
+              const nw =
+                o.nw === "all" || (Array.isArray(o.nw) && o.nw.includes(d));
+              return `<span class="cell ${h ? "hl" : ""} ${o.cc || ""} ${nw ? "new" : ""}">${tm(c, d, f)}</span>`;
+            })
+            .join("");
+          const wrap = o.wrap
+            ? `<span class="cellwrap">${cells}</span>`
+            : cells;
+          return `<div class="grow ${o.cls || ""}"><span class="gut ${o.gcls || ""}">${o.gut || ""}</span>${wrap}</div>`;
+        }
+        function divGrid(s, size = "") {
+          const fin = s >= 7;
+          const q = [null, null, null, null];
+          if (s >= 1) q[0] = "x";
+          if (s >= 4) q[1] = "−2";
+          const qhl = s === 1 ? [3] : s === 4 ? [2] : [];
+          const qnw = s === 1 ? [3] : s === 4 ? [2] : [];
+          const dsrLead = s === 1 || s === 4 ? "hl" : "";
+          const dsrAll = s === 2 || s === 5 ? "on" : "";
+          const gut = `<span class="dvs ${dsrAll}"><span class="${dsrLead}">2x<sup>2</sup></span> − x − 1</span>`;
+          const R = [];
+          R.push(
+            gridRow(q, { cls: "qrow" + (fin ? " fin" : ""), hl: qhl, nw: qnw }),
+          );
+          R.push(
+            gridRow(ROWS.dvd, {
+              cls: "dvd",
+              gut,
+              wrap: true,
+              hl: s === 1 ? [3] : s === 3 ? "all" : [],
+            }),
+          );
+          if (s >= 2)
+            R.push(
+              gridRow(ROWS.p1, {
+                gut: '<span class="gm">−</span>',
+                hl: s === 2 || s === 3 ? "all" : [],
+                nw: s === 2 ? "all" : [],
+              }),
+            );
+          if (s >= 3)
+            R.push(
+              '<div class="grow rule"><span></span><span class="cells"></span></div>',
+            );
+          if (s >= 3)
+            R.push(
+              gridRow(ROWS.r1, {
+                hl: s === 3 ? "all" : s === 4 ? [2] : s === 6 ? "all" : [],
+                nw: s === 3 ? "all" : [],
+              }),
+            );
+          if (s >= 5)
+            R.push(
+              gridRow(ROWS.p2, {
+                gut: '<span class="gm">−</span>',
+                hl: s === 5 || s === 6 ? "all" : [],
+                nw: s === 5 ? "all" : [],
+              }),
+            );
+          if (s >= 6)
+            R.push(
+              '<div class="grow rule"><span></span><span class="cells"></span></div>',
+            );
+          if (s >= 6)
+            R.push(
+              gridRow(ROWS.r2, {
+                hl: s === 6 ? "all" : [],
+                cc: fin ? "fin" : "",
+                nw: s === 6 ? "all" : [],
+              }),
+            );
+          return `<div class="dg mx ${size}" aria-label="Polynomial long division">${R.join("")}</div>`;
+        }
+
+        /* ---------- SCENE 1 ---------- */
+        SC[1] = {
+          render() {
+            const F = [
+              ["2x^3", -300, -200, 0.1],
+              ["-5x^2", 250, -260, 0.35],
+              ["-2", 200, 260, 0.6],
+            ];
+            return `<div class="s1 ${introSkip ? "skip" : ""}"><div class="wrap">
+      <div>
+        <div class="tag rise" style="--i:3">MISSION 01 · DIVISION OF POLYNOMIALS</div>
+        <h1 class="hero"><span class="rise" style="--i:0">POWER</span><span class="rise l2" style="--i:1">CREATIVE</span><span class="rise l3" style="--i:2">ALGEBRA</span></h1>
+        <p class="tagline rise" style="--i:4">Break the expression. Reveal the pattern.</p>
+        <div class="row rise" style="--i:5">${B("enter", "ENTER THE ARENA ▶", "li big")}${B("skipIntro", "Skip Intro", "ghost sm")}</div>
+      </div>
+      <div class="right">
+        <div class="bigexpr mx">${F.map(([t, dx, dy, dl]) => `<span class="term" style="--dx:${dx}px;--dy:${dy}px;--td:${dl + 0.3}s">${M(t)}</span>`).join("")}</div>
+        <div class="subexpr mx term" style="--dx:0px;--dy:120px;--td:1.2s">÷ ${M("(2x^2 - x - 1)")}</div>
+        <div class="zero term" style="--dx:0px;--dy:60px;--td:1.8s">hidden term: <b class="mx">0x</b></div>
+      </div></div></div>`;
+          },
+          next() {
+            introSkip = false;
+            finish(1);
+            go(2);
+            return true;
+          },
+          label: () => "ENTER THE ARENA",
+        };
+
+        /* ---------- SCENE 2 ---------- */
+        const ROUTE = [
+          ["START", 1],
+          ["DISCOVER THE PROBLEM", 3],
+          ["UNDERSTAND THE STRUCTURE", 4],
+          ["COMPLETE THE DIVISION", 5],
+          ["PREDICT THE NEXT STEP", 6],
+          ["CATCH AN ERROR", 7],
+          ["COMPETE IN TEAMS", 8],
+          ["DEFEAT THE BOSS", 9],
+          ["REFLECT & MASTER", 10],
+        ];
+        SC[2] = {
+          render() {
+            const pos = (i) => [110 + i * 190, i % 2 ? 190 : 380];
+            const cur = ROUTE.findIndex((r) => !S.done[r[1]]);
+            let segs = "",
+              nodes = "";
+            ROUTE.forEach((r, i) => {
+              const [x, y] = pos(i);
+              if (i) {
+                const [px, py] = pos(i - 1);
+                segs += `<line x1="${px}" y1="${py}" x2="${x}" y2="${y}" stroke="${S.done[r[1]] ? "#B7FF3C" : "rgba(244,247,255,.28)"}" stroke-width="10" stroke-linecap="round" ${S.done[r[1]] ? "" : 'stroke-dasharray="4 18"'}/>`;
+              }
+              const done = !!S.done[r[1]],
+                isCur = i === cur;
+              const fill = done ? "#B7FF3C" : isCur ? "#20D9FF" : "#171D3B",
+                stroke = done ? "#B7FF3C" : isCur ? "#F4F7FF" : "#7C3AED";
+              const words = r[0].split(" ");
+              const half = Math.ceil(words.length / 2);
+              const lines =
+                words.length > 1 && r[0].length > 12
+                  ? [
+                      words.slice(0, half).join(" "),
+                      words.slice(half).join(" "),
+                    ]
+                  : [r[0]];
+              const ly = i % 2 ? y - 78 - (lines.length - 1) * 28 : y + 90;
+              nodes += `<g class="node" data-act="goto" data-n="${r[1]}" tabindex="0" role="button" aria-label="${r[0]}">
+        ${isCur ? `<circle cx="${x}" cy="${y}" r="62" fill="none" stroke="#20D9FF" stroke-width="3" opacity=".6"><animate attributeName="r" values="52;70;52" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0;.7" dur="2s" repeatCount="indefinite"/></circle>` : ""}
+        <circle class="nc" cx="${x}" cy="${y}" r="48" fill="${fill}" stroke="${stroke}" stroke-width="6"/>
+        <text x="${x}" y="${y + 13}" text-anchor="middle" font-size="38" font-weight="900" fill="${done || isCur ? "#06102a" : "#F4F7FF"}">${done ? "✓" : i === 0 ? "▶" : i}</text>
+        ${lines.map((l, k) => `<text x="${x}" y="${ly + k * 30}" text-anchor="middle" font-size="25" font-weight="800" fill="${done ? "#B7FF3C" : isCur ? "#20D9FF" : "#F4F7FF"}">${l}</text>`).join("")}</g>`;
+            });
+            return `<div class="s2"><div class="head"><div><div class="kicker">THE LEARNING MAP</div><div class="title">YOUR ROUTE</div></div>${B("begin", "BEGIN MISSION ▶", "li big")}</div>
+      <svg viewBox="0 0 1740 560" role="img" aria-label="Mission route map">${segs}${nodes}</svg>
+      <p class="mission">Your mission: find the quotient, identify the remainder, and explain why the algorithm works.</p></div>`;
+          },
+          next() {
+            finish(2);
+            go(3);
+            return true;
+          },
+          label: () => "BEGIN MISSION",
+        };
+
+        /* ---------- SCENE 3 ---------- */
+        SC[3] = {
+          render() {
+            const r = S.s3;
+            const ox = r >= 1 ? "O(t) = 2t³ − 5t² − 2" : "ORDERS",
+              rx = r >= 1 ? "R(t) = 2t² − t − 1" : "RIDERS";
+            return `<div class="s3"><div class="cols"><div>
+      <div class="row"><span class="kicker">SMART FOOD-DELIVERY APP</span><span class="illus">ILLUSTRATIVE MODEL · NOT REAL DATA</span></div>
+      <div class="q ${r >= 3 ? "dim" : ""}" style="margin-top:14px">How can we understand the workload represented by a large algebraic expression?</div>
+      <div class="stack">
+        ${r >= 1 ? `<div class="panel fade"><div class="lab">TWO MODELS</div><div class="eqline mx"><span class="c-cy">Orders</span> ${M("O(t) = 2t^3 - 5t^2 - 2")}</div><div class="eqline mx"><span class="c-vi">Riders</span> ${M("R(t) = 2t^2 - t - 1")}</div></div>` : ""}
+        ${r >= 2 ? `<div class="panel cyb fade"><div class="lab">WORKLOAD PER RIDER</div><div class="eqline mx">${M("O(t) ÷ R(t) = (2t^3 - 5t^2 - 2) ÷ (2t^2 - t - 1)")}</div></div>` : ""}
+        ${r >= 3 ? `<div class="challenge fade">How can we divide one polynomial by another and interpret the quotient and remainder?</div>` : ""}
+        ${r === 0 ? '<div class="sup-note" style="margin-top:20px">Invite answers from the class, then reveal the models.</div>' : ""}
+      </div></div>
+      <div class="panel" style="align-self:start"><svg viewBox="0 0 640 520" role="img" aria-label="Illustrative curve of orders growing faster than a straight line of riders">
+        <line x1="60" y1="460" x2="620" y2="460" stroke="#F4F7FF" stroke-width="4"/><line x1="60" y1="460" x2="60" y2="30" stroke="#F4F7FF" stroke-width="4"/>
+        <text x="620" y="496" text-anchor="end" font-size="24" font-weight="700" fill="#F4F7FF">time →</text>
+        <path class="curve" d="M60 440 C 240 430, 400 380, 600 60" fill="none" stroke="#20D9FF" stroke-width="10" stroke-linecap="round"/>
+        <path class="curve" d="M60 420 L600 250" fill="none" stroke="#A98BFF" stroke-width="10" stroke-linecap="round"/>
+        <text x="84" y="96" font-size="${r >= 1 ? 25 : 32}" font-weight="800" fill="#20D9FF">${ox}</text>
+        <text x="100" y="${r >= 1 ? 355 : 360}" font-size="${r >= 1 ? 25 : 30}" font-weight="800" fill="#A98BFF">${rx}</text>
+      </svg><div class="sup-note" style="text-align:center">Orders accelerate. Riders grow steadily.</div></div></div></div>`;
+          },
+          next() {
+            if (S.s3 < 3) {
+              S.s3++;
+              if (S.s3 === 1) cue("RAISE YOUR HAND");
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s3 > 0) {
+              S.s3--;
+              return true;
+            }
+            return false;
+          },
+          label: () => (S.s3 < 3 ? "REVEAL NEXT" : "NEXT SCENE"),
+        };
+
+        /* ---------- SCENE 4 ---------- */
+        SC[4] = {
+          render() {
+            const r = S.s4;
+            return `<div class="s4"><div class="kicker">THE DIVISION ENGINE</div>
+    <div class="top"><div>
+      <div class="panel" style="margin-top:12px"><div class="lab">DIVIDEND</div><div class="big mx ${r >= 1 ? "" : ""}">${r >= 1 ? `2x<sup>3</sup> − 5x<sup>2</sup> <span class="c-cy new">+ 0x</span> − 2` : M("2x^3 - 5x^2 - 2")}</div></div>
+      <div class="panel" style="margin-top:18px;border-color:var(--vio)"><div class="lab">DIVISOR</div><div class="big mx c-vi">${M("2x^2 - x - 1")}</div></div>
+      ${r >= 1 ? '<div class="note fade">No x-term in the dividend, so we write it as 0x. A missing term is a zero coefficient.</div>' : '<div class="sup-note" style="margin-top:16px">What do you notice about the dividend?</div>'}
+    </div>
+    <div class="panel" style="padding:30px 20px">${r >= 2 ? `<div class="lab" style="margin-bottom:10px">THE LONG-DIVISION FRAME</div><div class="fade">${divGrid(0, "small")}</div><div class="sup-note" style="margin-top:12px"><span class="c-li">▲ quotient</span> goes above the dividend</div>` : '<div class="lab">STRUCTURE</div><div class="sup-note" style="margin-top:20px">Press REVEAL to build the frame.</div>'}</div></div>
+    ${
+      r >= 3
+        ? `<div class="fade"><div class="algo">${["DIVIDE", "MULTIPLY", "SUBTRACT", "REPEAT"].map((w, i) => `${i ? '<span class="arrow">→</span>' : ""}<span class="chip ${i === 0 ? "a1" : ""}">${w}</span>`).join("")}</div>
+      <div class="remind">Divide the leading terms, multiply, subtract, and repeat.</div></div>`
+        : ""
+    }</div>`;
+          },
+          next() {
+            if (S.s4 < 3) {
+              S.s4++;
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s4 > 0) {
+              S.s4--;
+              return true;
+            }
+            return false;
+          },
+          label: () => (S.s4 < 3 ? "REVEAL STRUCTURE" : "NEXT SCENE"),
+        };
+
+        /* ---------- SCENE 5 ---------- */
+        const G5 = [
+          {
+            t: "THE SETUP",
+            c: "(2x^3 − 5x^2 + 0x − 2) ÷ (2x^2 − x − 1)",
+            n: "The missing x-term is a 0x placeholder.",
+            h: "What is the leading term of each polynomial?",
+          },
+          {
+            t: "STEP 1 · DIVIDE",
+            c: "2x^3 ÷ 2x^2 = x",
+            n: "The leading terms decide the next quotient term.",
+            h: "How many times does 2x² go into 2x³?",
+          },
+          {
+            t: "STEP 2 · MULTIPLY",
+            c: "x(2x^2 − x − 1) = 2x^3 − x^2 − x",
+            n: "Multiply the ENTIRE divisor, not just its leading term.",
+            h: "Multiply every term of the divisor by x.",
+          },
+          {
+            t: "STEP 3 · SUBTRACT",
+            c: "= −4x^2 + x − 2",
+            n: "Subtracting flips EVERY sign of the product. The −2 comes down.",
+            flip: "−(2x^3 − x^2 − x) = −2x^3 + x^2 + x",
+            h: "Change the sign of every term in the product, then add.",
+          },
+          {
+            t: "STEP 4 · DIVIDE AGAIN",
+            c: "−4x^2 ÷ 2x^2 = −2",
+            n: "Quotient so far: x − 2",
+            h: "Look at the leading term of the new line: −4x².",
+          },
+          {
+            t: "STEP 5 · MULTIPLY AGAIN",
+            c: "−2(2x^2 − x − 1) = −4x^2 + 2x + 2",
+            n: "Watch the signs: (−2)(−x) = +2x and (−2)(−1) = +2.",
+            h: "−2 times −x is positive.",
+          },
+          {
+            t: "STEP 6 · SUBTRACT AGAIN",
+            c: "= −x − 4",
+            n: "(−4x² + x − 2) − (−4x² + 2x + 2)",
+            flip: "−(−4x^2 + 2x + 2) = +4x^2 − 2x − 2",
+            h: "Distribute the minus sign to all three terms.",
+          },
+          {
+            t: "STEP 7 · WHY STOP?",
+            c: "deg(−x − 4) = 1 < deg(divisor) = 2",
+            n: "The remainder has lower degree than the divisor, so the division stops.",
+            h: "Compare the degrees: 1 and 2.",
+            fin: true,
+          },
+        ];
+        SC[5] = {
+          hint: true,
+          hintText() {
+            return G5[S.s5.step].h;
+          },
+          render() {
+            const st = S.s5.step,
+              v = S.s5.full ? 7 : st,
+              g = G5[v];
+            const dots = G5.map(
+              (_, i) => `<i class="${i < v ? "d" : i === v ? "c" : ""}"></i>`,
+            ).join("");
+            return `<div class="s5"><div class="cols"><div>
+      <div class="dots" aria-label="Step ${v} of 7">${dots}</div>
+      <div class="panel" style="padding:24px 20px">${divGrid(v)}</div>
+      <div class="ctrls">${B("s5first", "⏮ FIRST STEP", "ghost sm")}${B("s5replay", "↻ REPLAY STEP", "ghost sm")}${S.s5.full ? B("s5hide", "HIDE FULL SOLUTION", "ghost sm on") : B("s5full", "SHOW FULL SOLUTION", "ghost sm")}</div>
+    </div><div class="panel callout cyb" style="align-self:start">
+      <div class="stg">${g.t}</div>
+      <div class="calc mx ${g.fin ? "c-li" : ""}">${M(g.c)}</div>
+      <div class="note">${M(g.n)}</div>
+      ${g.flip ? `<div class="flip mx"><span class="t">SIGN FLIP</span>${M(g.flip)}</div>` : ""}
+      ${g.fin ? `<div class="result mx fade"><div>Q: ${M("x - 2")}</div><div>R: ${M("-x - 4")}</div></div>` : ""}
+      ${hintOn ? `<div class="hintbox">${M(G5[st].h)}</div>` : ""}
+    </div></div></div>`;
+          },
+          next() {
+            if (S.s5.step < 7) {
+              S.s5.step++;
+              S.s5.full = false;
+              if ([3, 6].includes(S.s5.step)) cue("EXPLAIN THE SIGN");
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s5.step > 0) {
+              S.s5.step--;
+              S.s5.full = false;
+              return true;
+            }
+            return false;
+          },
+          label: () => (S.s5.step < 7 ? "NEXT STEP" : "NEXT SCENE"),
+        };
+
+        /* ---------- SCENE 6 ---------- */
+        const OPT6 = [
+          {
+            k: "A",
+            t: "Divide −4x² by 2x².",
+            fb: "Correct. Divide the leading terms to determine the next quotient term: −4x² ÷ 2x² = −2.",
+          },
+          {
+            k: "B",
+            t: "Multiply the divisor by the entire remainder.",
+            fb: "Not the next move. We multiply the divisor by the new quotient TERM, never by the whole remainder. First we need that term.",
+          },
+          {
+            k: "C",
+            t: "Stop, because the remainder is smaller in degree.",
+            fb: "Compare degrees: −4x² + x − 2 has degree 2 and the divisor has degree 2. It is not lower, so we keep dividing.",
+          },
+        ];
+        SC[6] = {
+          hint: true,
+          hintText: () =>
+            "Compare the leading term of the new line with the leading term of the divisor.",
+          render() {
+            const p = S.s6.pick,
+              pk = OPT6.find((o) => o.k === p);
+            const opts = OPT6.map((o) => {
+              const cls =
+                (p === o.k ? (o.k === "A" ? "ok" : "bad") : "") +
+                (S.s6.expl && o.k === "A" ? " ok" : "");
+              const mk = cls.includes("ok")
+                ? "✓ CORRECT"
+                : cls.includes("bad")
+                  ? "✗ NOT YET"
+                  : "";
+              return `<button class="opt ${cls}" data-act="s6pick" data-k="${o.k}"><span class="lt">${o.k}</span><span>${M(o.t)}</span><span class="mk">${mk}</span></button>`;
+            }).join("");
+            return `<div class="s6"><div class="cols"><div>
+      <div class="lab" style="margin-bottom:8px">DIVISION SO FAR</div><div class="panel" style="padding:22px 10px">${divGrid(3, "small")}</div>
+      <div class="sup-note" style="margin-top:14px">Remainder: <span class="mx c-cy">${M("-4x^2 + x - 2")}</span></div></div>
+      <div><div class="qt">WHAT'S THE NEXT MOVE?</div>
+      <div class="prompt">Invite predictions first, then select an answer.</div>
+      <div class="opts">${opts}</div>
+      ${pk && !S.s6.expl ? `<div class="fb ${pk.k === "A" ? "ok" : "bad"} fade"><b>${pk.k === "A" ? "CORRECT" : "THINK AGAIN"}</b> · ${M(pk.fb)}</div>` : ""}
+      ${S.s6.expl ? `<div class="fb ok fade"><b>EXPLANATION</b> · ${M(OPT6[0].fb)}</div>` : ""}
+      ${hintOn ? `<div class="hintbox">${SC[6].hintText()}</div>` : ""}
+      <div class="ctrls">${B("s6try", "TRY AGAIN", "ghost sm")}${B("s6expl", "REVEAL EXPLANATION", "cy sm")}</div></div></div></div>`;
+          },
+          next() {
+            if (!S.s6.expl && S.s6.pick !== "A") {
+              S.s6.expl = true;
+              sfx("ok");
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            !S.s6.expl && S.s6.pick !== "A"
+              ? "REVEAL EXPLANATION"
+              : "NEXT SCENE",
+        };
+
+        /* ---------- SCENE 7 ---------- */
+        const CATS = [
+          "SIGN ERROR",
+          "INCORRECT MULTIPLICATION",
+          "INCORRECT SUBTRACTION",
+          "WRONG STOPPING CONDITION",
+        ];
+        const EXS = [
+          {
+            tag: "EXAMPLE 1 · THE PRODUCT",
+            ok: 0,
+            lines: [
+              "Quotient term: −2",
+              '−2(2x^2 − x − 1) = −4x^2 <span class="badt">− 2x − 2</span>',
+            ],
+            fixLines: [
+              '−2(2x^2 − x − 1) = −4x^2 <span class="goodt">+ 2x + 2</span>',
+              "(−2)(2x^2) = −4x^2  ·  (−2)(−x) = +2x  ·  (−2)(−1) = +2",
+            ],
+            fb: [
+              "Yes, a sign error. (−2) × (−x) = +2x, not −2x, and (−2) × (−1) = +2, not −2.",
+              "The factors are the right ones. Look at the signs of the products: that is where it goes wrong.",
+              "No subtraction has happened on this line yet. The slip is earlier, in the product.",
+              "We have not reached the stopping point yet. The slip is in the product we just computed.",
+            ],
+          },
+          {
+            tag: "EXAMPLE 2 · THE SUBTRACTION",
+            ok: 2,
+            lines: [
+              "(−4x^2 + x − 2) − (−4x^2 + 2x + 2)",
+              '= −4x^2 + x − 2 + 4x^2 <span class="badt">+ 2x + 2</span>',
+              "= 3x",
+            ],
+            fixLines: [
+              '= −4x^2 + x − 2 + 4x^2 <span class="goodt">− 2x − 2</span>',
+              "= −x − 4",
+            ],
+            fb: [
+              "Signs are involved, yes. The root cause is the subtraction: the minus must apply to the whole second polynomial.",
+              "The product was already correct. The slip happens when we subtract it.",
+              "Yes. Subtracting a polynomial changes the sign of EVERY term. Here only the first term was changed.",
+              "Not a stopping issue. Check what happens to each term of the second polynomial.",
+            ],
+          },
+        ];
+        SC[7] = {
+          hint: true,
+          hintText: () =>
+            S.s7.ex === 0
+              ? "Multiply each term of the divisor by −2 and check each sign."
+              : "What happens to every term when we subtract a polynomial?",
+          render() {
+            const e = S.s7.ex,
+              ex = EXS[e],
+              p = S.s7.pick[e],
+              fx = S.s7.fix[e];
+            return `<div class="s7"><div class="cols"><div>
+      <div class="tabs">${EXS.map((x, i) => `<button class="tab ${i === e ? "on" : ""}" data-act="s7ex" data-i="${i}">${x.tag}</button>`).join("")}</div>
+      <div class="panel"><div class="lab">A STUDENT WROTE</div><div class="work mx">${ex.lines.map((l) => `<div class="ln">${M(l)}</div>`).join("")}</div></div>
+      ${fx ? `<div class="panel lib fade" style="margin-top:16px"><div class="lab c-li">THE FIX ✓</div><div class="work mx" style="font-size:38px">${ex.fixLines.map((l) => `<div class="ln">${M(l)}</div>`).join("")}</div></div>` : ""}
+    </div><div>
+      <div class="qt">CAN YOU CATCH THE ERROR?</div>
+      <div class="sup-note" style="margin:10px 0">Let students explain first. We are looking at the reasoning.</div>
+      <div class="cats">${CATS.map((c, i) => `<button class="opt ${p === i ? (i === ex.ok ? "ok" : "sel") : ""}" data-act="s7pick" data-i="${i}">${c}</button>`).join("")}</div>
+      ${p != null ? `<div class="fb ${p === ex.ok ? "ok" : "bad"} fade" style="${p === ex.ok ? "" : "border-color:var(--cy);background:rgba(32,217,255,.07)"}"><b>${p === ex.ok ? "YES" : "GOOD THINKING"}</b> · ${M(ex.fb[p])}</div>` : ""}
+      ${hintOn ? `<div class="hintbox">${SC[7].hintText()}</div>` : ""}
+      <div class="ctrls">${B("s7fix", "REVEAL THE FIX", "cy sm")}</div>
+    </div></div></div>`;
+          },
+          next() {
+            if (!S.s7.fix[S.s7.ex]) {
+              S.s7.fix[S.s7.ex] = true;
+              sfx("ok");
+              return true;
+            }
+            if (S.s7.ex === 0) {
+              S.s7.ex = 1;
+              hintOn = false;
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s7.ex === 1) {
+              S.s7.ex = 0;
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            !S.s7.fix[S.s7.ex]
+              ? "REVEAL THE FIX"
+              : S.s7.ex === 0
+                ? "SECOND EXAMPLE"
+                : "NEXT SCENE",
+        };
+
+        /* ---------- SCENE 8 ---------- */
+        const ROUNDS = [
+          {
+            t: "QUICK THINK",
+            q: "Divide the leading terms:",
+            m: "6x^3 ÷ 3x^2",
+            a: "2x",
+            h: "Divide the coefficients, subtract the exponents.",
+          },
+          {
+            t: "SIGN SPRINT",
+            q: "What is the correct result of:",
+            m: "-3(2x^2 - x + 4)",
+            a: "-6x^2 + 3x - 12",
+            h: "Multiply EVERY term by −3.",
+          },
+          {
+            t: "FIND THE NEXT STEP",
+            q: "After the first subtraction we have −4x² + x − 2. What is the next operation?",
+            m: "",
+            a: "Divide −4x^2 by 2x^2 to get −2.",
+            h: "Look at the leading terms of the new line.",
+          },
+          {
+            t: "REMAINDER RULE",
+            q: "When does polynomial long division stop?",
+            m: "",
+            a: "When the remainder is zero or its degree is lower than the degree of the divisor.",
+            h: "Compare degrees.",
+          },
+          {
+            t: "EXPLAIN TO WIN",
+            q: "Explain why subtracting a polynomial means subtracting every term with the correct sign.",
+            m: "",
+            a: "The minus sign applies to the whole polynomial, so every term changes sign: -(2x^3 - x^2 - x) = -2x^3 + x^2 + x.",
+            h: "Think about the minus sign in front of the bracket.",
+          },
+        ];
+        SC[8] = {
+          hint: true,
+          hintText: () => ROUNDS[S.s8.round].h,
+          render() {
+            const r = S.s8.round,
+              R = ROUNDS[r],
+              rev = S.s8.rev[r];
+            const n = S.teams;
+            return `<div class="s8">
+      <div class="rtabs">${ROUNDS.map((x, i) => `<button class="rtab ${i === r ? "on" : ""} ${S.s8.rev[i] && i !== r ? "dn" : ""}" data-act="s8round" data-i="${i}">${i + 1} · ${x.t}</button>`).join("")}</div>
+      <div class="mid"><div class="panel qpanel">
+        <div class="qline">${M(R.q)}</div>${R.m ? `<div class="qmath mx">${M(R.m)}</div>` : ""}
+        ${rev ? `<div class="ans mx fade">ANSWER: ${M(R.a)}</div>` : ""}
+        ${hintOn ? `<div class="hintbox" style="font-size:24px;margin-top:10px">${M(R.h)}</div>` : ""}</div>
+      <div>${timerHTML()}${timerCtl()}</div></div>
+      <div class="ctl">${B("s8reveal", rev ? "HIDE ANSWER" : "REVEAL ANSWER", "cy sm")}${B("s8resetRound", "RESET ROUND", "ghost sm")}${B("s8nextq", "NEXT QUESTION ▶", "ghost sm")}
+        <span style="flex:1"></span><span class="lab">TEAMS</span>${B("teams", "2", "ghost sm" + (n === 2 ? " on" : ""), 'data-v="2"')}${B("teams", "3", "ghost sm" + (n === 3 ? " on" : ""), 'data-v="3"')}
+        <span class="lab">BONUS</span>${[1, 2, 3].map((b) => B("bonus", "+" + b, "ghost sm" + (S.bonus === b ? " on" : ""), `data-v="${b}"`)).join("")}</div>
+      <div class="teams" style="grid-template-columns:repeat(${n},1fr)">${TEAMS.slice(
+        0,
+        n,
+      )
+        .map(
+          (
+            t,
+            i,
+          ) => `<div class="team ${S.active === i ? "act" : ""}" data-act="active" data-i="${i}" tabindex="0" role="button" aria-label="Select ${t.n}">
+        <div><div class="nm" style="color:${t.c}">${t.n}</div><div class="atag">${S.active === i ? "● ACTIVE TEAM" : "&nbsp;"}</div></div>
+        <div class="sc mx" style="color:${t.c}">${S.scores[i]}</div>
+        <div class="adj">${B("score", "−1", "ghost", `data-i="${i}" data-v="-1"`)}${B("score", "+1", "cy", `data-i="${i}" data-v="1"`)}${B("score", "BONUS +" + S.bonus, "li", `data-i="${i}" data-v="${S.bonus}"`)}</div></div>`,
+        )
+        .join("")}</div></div>`;
+          },
+          next() {
+            if (S.s8.round < 4) {
+              S.s8.round++;
+              T.reset();
+              cue("DISCUSS WITH YOUR TEAM");
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s8.round > 0) {
+              S.s8.round--;
+              T.reset();
+              return true;
+            }
+            return false;
+          },
+          label: () => (S.s8.round < 4 ? "NEXT QUESTION" : "NEXT SCENE"),
+        };
+
+        /* ---------- SCENE 9 ---------- */
+        const BQ = [
+          {
+            t: "STAGE A · FIRST QUOTIENT TERM",
+            q: "Divide the leading terms: 3x³ ÷ x² = ?",
+            o: ["3x^2", "x", "3x"],
+            c: 2,
+            e: "3x³ ÷ x² = 3x, because the coefficients give 3 and the exponents subtract: 3 − 2 = 1.",
+            h: [
+              "Divide the coefficients, then subtract the exponents.",
+              "3 ÷ 1 = 3 and x³ ÷ x² = x.",
+            ],
+            w: "First quotient term: 3x",
+          },
+          {
+            t: "STAGE B · THE PRODUCT",
+            q: "Multiply 3x by the ENTIRE divisor (x² + x − 1).",
+            o: ["3x^3 + 3x^2 + 3x", "3x^3 + 3x^2 - 3x", "3x^3 + x^2 - x"],
+            c: 1,
+            e: "3x · x² = 3x³, 3x · x = 3x², 3x · (−1) = −3x.",
+            h: ["Distribute 3x to every term.", "The last term is 3x · (−1)."],
+            w: "3x(x^2 + x - 1) = 3x^3 + 3x^2 - 3x",
+          },
+          {
+            t: "STAGE C · SUBTRACT",
+            q: "Subtract: (3x³ + 2x² − 7x + 5) − (3x³ + 3x² − 3x)",
+            o: ["-x^2 - 10x + 5", "6x^3 + 5x^2 - 10x + 5", "-x^2 - 4x + 5"],
+            c: 2,
+            e: "2x² − 3x² = −x², −7x − (−3x) = −4x, and 5 comes down.",
+            h: ["Change every sign of the product first.", "−7x + 3x = −4x."],
+            w: "(3x^3 + 2x^2 - 7x + 5) - (3x^3 + 3x^2 - 3x) = -x^2 - 4x + 5",
+          },
+          {
+            t: "STAGE D · NEXT QUOTIENT TERM",
+            q: "Divide the new leading terms: −x² ÷ x² = ?",
+            o: ["-x", "1", "-1"],
+            c: 2,
+            e: "−x² ÷ x² = −1. The quotient is now 3x − 1.",
+            h: ["The x² parts cancel.", "Keep the sign: negative ÷ positive."],
+            w: "Next quotient term: -1, so the quotient is 3x - 1",
+          },
+          {
+            t: "STAGE E · THE REMAINDER",
+            q: "Multiply −1(x² + x − 1) = −x² − x + 1, then subtract it from −x² − 4x + 5. Remainder?",
+            o: ["-5x + 6", "-3x + 4", "0 (exact division)"],
+            c: 1,
+            e: "(−4x) − (−x) = −3x and 5 − 1 = 4. Degree 1 < degree 2, so we stop.",
+            h: [
+              "Flip every sign of −x² − x + 1 before adding.",
+              "−4x + x = −3x.",
+            ],
+            w: "(-x^2 - 4x + 5) - (-x^2 - x + 1) = -3x + 4",
+          },
+        ];
+        SC[9] = {
+          hint: true,
+          hintText() {
+            const s = S.s9;
+            return s.hints[s.stage]
+              ? BQ[s.stage].h.slice(0, s.hints[s.stage]).join(" ")
+              : "";
+          },
+          render() {
+            const s = S.s9,
+              st = s.stage,
+              Q = BQ[st],
+              pk = s.pick;
+            const hp = BQ.map(
+              (_, i) =>
+                `<i class="${s.ok[i] ? "d" : i === st ? "c" : ""}">${s.ok[i] ? "✓" : "ABCDE"[i]}</i>`,
+            ).join("");
+            const opts = Q.o
+              .map((o, i) => {
+                const cls = s.ok[st]
+                  ? i === Q.c
+                    ? "ok"
+                    : ""
+                  : pk === i
+                    ? i === Q.c
+                      ? "ok"
+                      : "bad"
+                    : "";
+                return `<button class="opt ${cls}" data-act="s9pick" data-i="${i}" ${s.ok[st] ? "disabled" : ""}><span class="lt">${"ABC"[i]}</span><span class="mx">${M(o)}</span><span class="mk">${cls === "ok" ? "✓" : cls === "bad" ? "✗" : ""}</span></button>`;
+              })
+              .join("");
+            const hints = s.hints[st]
+              ? `<div class="hintbox" style="font-size:26px">HINT ${s.hints[st]}/2 · ${M(BQ[st].h.slice(0, s.hints[st]).join(" "))}</div>`
+              : "";
+            const work = BQ.slice(0, 5)
+              .map((b, i) =>
+                s.ok[i] ? `<div class="w mx new">${M(b.w)}</div>` : "",
+              )
+              .join("");
+            const sol = s.sol
+              ? `<div class="panel lib fade verify mx" style="margin-top:12px"><div class="lab c-li">VERIFIED · Dividend = Divisor × Quotient + Remainder</div>
+      ${M("Quotient 3x - 1, Remainder -3x + 4")}<br>${M("(x^2 + x - 1)(3x - 1) = 3x^3 + 2x^2 - 4x + 1")}<br>${M("3x^3 + 2x^2 - 4x + 1 + (-3x + 4) = 3x^3 + 2x^2 - 7x + 5")} <span class="c-li">✓</span><br>
+      <span class="c-li">deg(−3x + 4) = 1 &lt; deg(x² + x − 1) = 2 ✓</span></div>`
+              : "";
+            return `<div class="s9"><div class="hd"><div class="boss"><span>FINAL BOSS</span>MASTER THE DIVISION</div><div class="hp" aria-label="Stages cleared">${hp}</div></div>
+      <div class="prob mx">${M("(3x^3 + 2x^2 - 7x + 5) ÷ (x^2 + x - 1)")}</div>
+      ${
+        s.sol
+          ? sol
+          : `<div class="cols"><div class="panel cyb"><div class="st">${Q.t}</div><div class="sq">${M(Q.q)}</div><div class="opts">${opts}</div>
+        ${s.ok[st] ? `<div class="fb ok fade"><b>CORRECT</b> · ${M(Q.e)}</div>` : pk != null ? `<div class="fb bad fade"><b>NOT QUITE</b> · Discuss with your team and try again.</div>` : ""}${hints}</div>
+        <div class="panel"><div class="lab">WORKING SO FAR</div><div class="wk" style="margin-top:12px">${work || '<div class="sup-note">Solve each stage to build the division.</div>'}</div></div></div>`
+      }
+      <div class="ctrls" style="justify-content:space-between;align-items:center"><div class="row">${B("s9hint", "HINT (" + s.hints[st] + "/2)", "ghost sm")}${B("s9sol", s.sol ? "HIDE SOLUTION" : "REVEAL SOLUTION", "cy sm")}${B("s9mode", "TIMER MODE: " + (s.timer ? "ON" : "OFF"), "ghost sm" + (s.timer ? " on" : ""))}</div>
+      ${s.timer ? `<div class="row">${timerHTML("sm")}<div>${timerCtl()}</div></div>` : ""}${scoreChips()}</div></div>`;
+          },
+          onHint() {
+            const s = S.s9;
+            if (s.hints[s.stage] < 2) {
+              s.hints[s.stage]++;
+            }
+            return true;
+          },
+          next() {
+            const s = S.s9;
+            if (s.stage < 4) {
+              s.stage++;
+              s.pick = null;
+              return true;
+            }
+            if (!s.sol) {
+              s.sol = true;
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            const s = S.s9;
+            if (s.sol) {
+              s.sol = false;
+              return true;
+            }
+            if (s.stage > 0) {
+              s.stage--;
+              s.pick = null;
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            S.s9.stage < 4
+              ? "NEXT STAGE"
+              : !S.s9.sol
+                ? "REVEAL SOLUTION"
+                : "NEXT SCENE",
+        };
+
+        /* ---------- SCENE 10 ---------- */
+        SC[10] = {
+          calm: true,
+          render() {
+            const r = S.s10;
+            const A = [
+              ["1", "DIVIDE", "the leading terms."],
+              ["2", "MULTIPLY", "by the entire divisor."],
+              ["3", "SUBTRACT", "the entire product."],
+              [
+                "4",
+                "REPEAT",
+                "until the remainder has lower degree than the divisor.",
+              ],
+            ];
+            return `<div class="s10"><div class="kicker">MATHEMATICAL DEBRIEF</div><div class="title">THE ALGORITHM IN FOUR MOVES</div>
+      <div class="acts">${A.map((a) => `<div class="act"><div class="n">MOVE ${a[0]}</div><div class="v ${a[0] === "1" ? "c-cy" : ""}">${a[1]}</div><div class="d">${a[2]}</div></div>`).join("")}</div>
+      <div class="signs">⚠ WATCH THE SIGNS</div>
+      ${r >= 1 ? `<div class="panel fade" style="margin-top:22px"><div class="lab">OUR EXAMPLE</div><div class="mx ident">Quotient <span class="c-li">${M("x - 2")}</span> &nbsp; Remainder <span class="c-li">${M("-x - 4")}</span></div></div>` : ""}
+      ${r >= 2 ? `<div class="panel lib fade" style="margin-top:18px"><div class="lab c-li">Dividend = Divisor × Quotient + Remainder</div><div class="mx idl">${M("2x^3 - 5x^2 - 2 = (2x^2 - x - 1)(x - 2) + (-x - 4)")}</div><div class="sup-note">Use this identity to check any division.</div></div>` : ""}
+    </div>`;
+          },
+          next() {
+            if (S.s10 < 2) {
+              S.s10++;
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s10 > 0) {
+              S.s10--;
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            S.s10 === 0
+              ? "SHOW THE EXAMPLE"
+              : S.s10 === 1
+                ? "REVEAL THE IDENTITY"
+                : "NEXT SCENE",
+        };
+
+        /* ---------- SCENE 11 ---------- */
+        const QS11 = [
+          {
+            q: "What do we divide to obtain the next quotient term?",
+            a: "The leading term of the current remainder divided by the leading term of the divisor.",
+          },
+          {
+            q: "Why must we subtract the entire product?",
+            a: "Because subtracting a polynomial requires subtracting each term, including its sign.",
+          },
+          {
+            q: "What is the stopping condition?",
+            a: "The remainder is zero or has degree lower than the divisor.",
+          },
+        ];
+        SC[11] = {
+          render() {
+            const q = S.s11.q,
+              rev = S.s11.rev[q];
+            return `<div class="s11"><div class="kicker">EXIT CHALLENGE</div><div class="qn">QUESTION ${q + 1} / 3</div>
+      <div class="qq">${QS11[q].q}</div>
+      ${rev ? `<div class="ans fade">${QS11[q].a}</div>` : `<div class="sup-note">Discuss, then reveal the expected answer.</div>`}
+      <div class="ctrls" style="margin-top:30px">${B("s11rev", rev ? "NEXT ▶" : "REVEAL ANSWER", "cy")}</div>
+      <div class="ctrls" style="margin-top:60px">${B("goto", "NEED ONE MORE EXAMPLE?", "ghost", 'data-n="5"')}${B("goto", "READY FOR VICTORY? ▶", "li", 'data-n="12"')}</div></div>`;
+          },
+          next() {
+            const s = S.s11;
+            if (!s.rev[s.q]) {
+              s.rev[s.q] = true;
+              sfx("ok");
+              return true;
+            }
+            if (s.q < 2) {
+              s.q++;
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s11.q > 0) {
+              S.s11.q--;
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            !S.s11.rev[S.s11.q]
+              ? "REVEAL ANSWER"
+              : S.s11.q < 2
+                ? "NEXT QUESTION"
+                : "NEXT SCENE",
+        };
+
+        /* ---------- SCENE 12 ---------- */
+        SC[12] = {
+          render() {
+            const r = S.s12,
+              doneCount = Object.keys(S.done).filter(
+                (k) => S.done[k] && +k < 12,
+              ).length;
+            const dots = NAMES.map(
+              (_, i) =>
+                `<i class="${S.done[i + 1] || (i === 11 && r >= 2) ? "d" : ""}"></i>`,
+            ).join("");
+            return `<div class="s12"><div class="cols"><div>
+      <div class="kicker">MISSION 01 · ${doneCount} OF 11 EARLIER STAGES COMPLETED</div>
+      <div class="big">MISSION COMPLETE</div>
+      <div class="pathdots" aria-label="Completed stages">${dots}</div>
+      <div class="res mx"><div>Quotient: <span class="c-li">${M("x - 2")}</span></div><div>Remainder: <span class="c-li">${M("-x - 4")}</span></div></div>
+      ${r >= 1 ? `<div class="mx idl fade"><span class="c-li">Verified:</span> ${M("2x^3 - 5x^2 - 2")}<br>= ${M("(2x^2 - x - 1)(x - 2) - x - 4")}</div>` : ""}
+      ${r >= 2 ? `<div class="refl fade">What was the most important step in preventing a sign error?</div>` : ""}
+      <div class="ctrls" style="margin-top:26px">${B("s12replay", "REPLAY THE LESSON", "ghost sm")}${B("goto", "LEARNING MAP", "ghost sm", 'data-n="2"')}${B("s12boss", "RESTART BOSS", "ghost sm")}${B("resetSession", "RESET SESSION", "ghost sm")}</div>
+    </div><svg class="ring" viewBox="0 0 300 300" width="460" height="460" aria-hidden="true"><circle cx="150" cy="150" r="110" fill="none" stroke="#B7FF3C" stroke-width="12" stroke-linecap="round"/><path d="M95 155 L135 195 L210 110" fill="none" stroke="#B7FF3C" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`;
+          },
+          next() {
+            if (S.s12 < 2) {
+              S.s12++;
+              if (S.s12 === 2) cue("RAISE YOUR HAND");
+              return true;
+            }
+            return false;
+          },
+          prev() {
+            if (S.s12 > 0) {
+              S.s12--;
+              return true;
+            }
+            return false;
+          },
+          label: () =>
+            S.s12 === 0
+              ? "VERIFY THE RESULT"
+              : S.s12 === 1
+                ? "REFLECT"
+                : "FINISHED",
+        };
+
+        /* =====================================================================
+   5. RENDERER
+   ===================================================================== */
+        let cueTimer = 0;
+        function cue(t) {
+          const c = $("#cue");
+          c.textContent = t;
+          c.classList.add("show");
+          clearTimeout(cueTimer);
+          cueTimer = setTimeout(() => c.classList.remove("show"), 2400);
+        }
+
+        function render(anim) {
+          autoCheck();
+          const sc = SC[S.scene],
+            root = $("#scene");
+          const fk =
+            document.activeElement && document.activeElement.dataset
+              ? {
+                  a: document.activeElement.dataset.act,
+                  i: document.activeElement.dataset.i,
+                  v: document.activeElement.dataset.v,
+                  k: document.activeElement.dataset.k,
+                  n: document.activeElement.dataset.n,
+                }
+              : null;
+          root.className = "scene s" + S.scene + (anim ? " enter" : "");
+          root.innerHTML = sc.render();
+          document.body.classList.toggle("calm", !!sc.calm);
+          renderBar();
+          renderHud();
+          applyUi();
+          upd();
+          if (fk && fk.a) {
+            const el = $$("[data-act]", root).find(
+              (e) =>
+                e.dataset.act === fk.a &&
+                e.dataset.i === fk.i &&
+                e.dataset.v === fk.v &&
+                e.dataset.k === fk.k &&
+                e.dataset.n === fk.n,
+            );
+            if (el && !el.disabled) el.focus({ preventScroll: true });
+          }
+          if ($("#nav").classList.contains("open")) renderNav();
+          if ($("#teacher").classList.contains("open")) renderTeacher();
+          save();
+        }
+        function renderHud() {
+          $("#stageId").innerHTML =
+            `STAGE <b>${String(S.scene).padStart(2, "0")}</b> · ${NAMES[S.scene - 1].split(":")[0]}`;
+          $("#progTxt").textContent =
+            Object.keys(S.done).filter((k) => S.done[k]).length + " / 12";
+        }
+        function renderBar() {
+          const sc = SC[S.scene],
+            hasPrev = S.scene > 1;
+          $("#bar").innerHTML =
+            `<div class="grp">${hasPrev ? B("prev", "◀ BACK <kbd>←</kbd>", "ghost") : ""}</div>
+    <div class="grp">${sc.hint || sc.onHint ? B("hint", "HINT <kbd>H</kbd>", "ghost" + (hintOn ? " on" : "")) : ""}${B("spot", "SPOTLIGHT", "ghost spotbtn")}${B("teacher", "TEACHER", "ghost")}</div>
+    <div class="grp">${S.scene < 12 || sc.next ? B("next", (sc.label ? sc.label() : "NEXT") + " <kbd>→</kbd>", "li") : ""}</div>`;
+        }
+        function applyUi() {
+          document.body.classList.toggle("spot", S.ui.spot);
+          document.body.classList.toggle("hide-timer", !S.ui.timerVis);
+        }
+        function renderNav() {
+          const n = Object.keys(S.done).filter((k) => S.done[k]).length;
+          $("#navsub").textContent =
+            `${n} of 12 stages complete · click any stage to jump there`;
+          $("#navfill").style.width = (n / 12) * 100 + "%";
+          $("#navlist").innerHTML = NAMES.map((nm, i) => {
+            const k = i + 1,
+              d = S.done[k],
+              c = S.scene === k;
+            return `<li><button class="${d ? "done" : ""} ${c ? "cur" : ""}" data-act="goto" data-n="${k}" ${c ? 'aria-current="step"' : ""}><span class="ic">${d ? "✓" : String(k).padStart(2, "0")}</span><span>${String(k).padStart(2, "0")} — ${nm}</span><span class="st">${c ? "NOW" : d ? "DONE" : ""}</span></button></li>`;
+          }).join("");
+        }
+        function renderTeacher() {
+          const el = $("#teacher"),
+            n = S.scene;
+          el.innerHTML = `<h2>TEACHER CONTROLS ${B("closeTeacher", "✕", "ghost sm", 'aria-label="Close"')}</h2>
+  <h3>JUMP TO SCENE</h3><select id="jump" aria-label="Jump to scene">${NAMES.map((x, i) => `<option value="${i + 1}" ${n === i + 1 ? "selected" : ""}>${String(i + 1).padStart(2, "0")} — ${x}</option>`).join("")}</select>
+  <h3>PRESENTATION</h3><div class="tg">
+    ${B("pause", paused ? "RESUME ACTIVITY" : "PAUSE ACTIVITY", "ghost")}${B("timerVis", S.ui.timerVis ? "HIDE TIMER" : "SHOW TIMER", "ghost")}
+    ${B("restart", "RESTART ACTIVITY", "ghost")}${B("replay", "REPLAY ANIMATION", "ghost")}
+    ${B("spot", S.ui.spot ? "SPOTLIGHT: ON" : "SPOTLIGHT: OFF", "ghost")}${B("sound", S.ui.sound ? "SOUND: ON" : "SOUND: OFF", "ghost")}
+    ${B("full", "FULLSCREEN", "ghost")}${B("auto", S.ui.auto ? "AUTO-ADVANCE: ON" : "AUTO-ADVANCE: OFF", "ghost")}
+    ${B("markDone", S.done[n] ? "MARK STAGE INCOMPLETE" : "MARK STAGE COMPLETE", S.done[n] ? "ghost" : "li")}${B("nav", "OPEN NAVIGATOR", "ghost")}</div>
+  <h3>TIMER PRESET</h3><div class="tg" style="grid-template-columns:repeat(4,1fr)">${[10, 20, 30, 45].map((p) => B("preset", p + "s", "ghost" + (S.preset === p ? " on" : ""), `data-v="${p}"`)).join("")}</div>
+  <h3>SCORES</h3><div class="tg">${B("resetScores", "RESET SCORES", "ghost")}${B("resetSession", "RESET SESSION", "coral")}</div>
+  <h3>KEYBOARD SHORTCUTS</h3><div class="sc-list"><kbd>→</kbd>next step / scene <br><kbd>←</kbd>previous step / scene<br><kbd>Space</kbd>start / pause timer<br><kbd>L</kbd>learning navigator<br><kbd>H</kbd>hint<br><kbd>R</kbd>replay scene animation<br><kbd>F</kbd>fullscreen<br><kbd>G</kbd>game · <kbd>P</kbd>practice · <kbd>V</kbd>video<br><kbd>Esc</kbd>close overlay / exit spotlight</div>`;
+        }
+
+        /* =====================================================================
+   6. ACTIONS & INPUT
+   ===================================================================== */
+        function go(n) {
+          n = Math.max(1, Math.min(12, n));
+          if (n !== S.scene) {
+            T.pause();
+            S.scene = n;
+            hintOn = false;
+            S.visited[n] = 1;
+            closeOverlays();
+            sfx("whoosh");
+            render(true);
+            if (CUES[n]) cue(CUES[n]);
+          } else {
+            closeOverlays();
+            render(false);
+          }
+        }
+        function nextAct() {
+          const sc = SC[S.scene];
+          if (sc.next && sc.next()) {
+            render(false);
+            return;
+          }
+          if (S.scene < 12) go(S.scene + 1);
+        }
+        function prevAct() {
+          const sc = SC[S.scene];
+          if (sc.prev && sc.prev()) {
+            render(false);
+            return;
+          }
+          if (S.scene > 1) go(S.scene - 1);
+        }
+        function hintAct() {
+          const sc = SC[S.scene];
+          if (sc.onHint) sc.onHint();
+          else if (sc.hint) hintOn = !hintOn;
+          render(false);
+        }
+        function restartScene(n) {
+          const d = DEF();
+          if ("s" + n in d) S["s" + n] = d["s" + n];
+          S.done[n] = false;
+          S.fired[n] = false;
+          hintOn = false;
+          if (n === 8 || n === 9) T.reset();
+          if (n === 1) introSkip = false;
+          render(true);
+        }
+        function resetSession() {
+          S = DEF();
+          T.reset();
+          hintOn = false;
+          paused = false;
+          $("#pausev").classList.remove("open");
+          closeOverlays();
+          render(true);
+        }
+        function replayLesson() {
+          const k = {
+            teams: S.teams,
+            active: S.active,
+            scores: S.scores,
+            bonus: S.bonus,
+            preset: S.preset,
+            ui: S.ui,
+          };
+          S = Object.assign(DEF(), k);
+          T.reset();
+          hintOn = false;
+          introSkip = false;
+          render(true);
+        }
+        function setPause(v) {
+          paused = v;
+          if (v) T.pause();
+          $("#pausev").classList.toggle("open", v);
+          if ($("#teacher").classList.contains("open")) renderTeacher();
+        }
+        function toggleNav(f) {
+          const o = $("#nav");
+          const open = f === undefined ? !o.classList.contains("open") : f;
+          if (open) {
+            renderNav();
+            $("#teacher").classList.remove("open");
+          }
+          o.classList.toggle("open", open);
+          if (open) {
+            const c = $("#navlist .cur");
+            c && c.focus();
+          }
+        }
+        function toggleTeacher(f) {
+          const o = $("#teacher");
+          const open = f === undefined ? !o.classList.contains("open") : f;
+          if (open) {
+            renderTeacher();
+            $("#nav").classList.remove("open");
+          }
+          o.classList.toggle("open", open);
+        }
+        function closeOverlays() {
+          $("#nav").classList.remove("open");
+          $("#teacher").classList.remove("open");
+        }
+        let confirmCb = null;
+        function confirmBox(msg, cb) {
+          $("#cmsg").textContent = msg;
+          confirmCb = cb;
+          $("#confirm").classList.add("open");
+        }
+        function fullscreen() {
+          const d = document;
+          if (d.fullscreenElement) d.exitFullscreen && d.exitFullscreen();
+          else if (d.documentElement.requestFullscreen)
+            d.documentElement.requestFullscreen().catch(() => {});
+        }
+
+        /* =====================================================================
+   7. EXTERNAL ACTIVITIES — GAME / PRACTICE / VIDEO (open in new tab)
+   ===================================================================== */
+        const GAME_HTML = `<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Remainder Wars</title>
+<style>
+:root{--bg:#120d2b;--p1:#2a1b5e;--p2:#3d2a86;--ink:#f4f1ff;--mut:#b9aee8;--hot:#ff5c7a;--gold:#ffd23f;--ok:#2ee59d;--bad:#ff4d5e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;min-height:100%}
+body{background:radial-gradient(circle at 50% 0,#3b2a8f 0,var(--bg) 60%) fixed}
+#app{max-width:520px;margin:0 auto;padding:12px}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px;gap:6px}
+.hud span{background:var(--p1);padding:5px 10px;border-radius:20px}
+.boss{text-align:center;margin:8px 0}
+.be{font-size:76px;line-height:1.1;display:inline-block}
+.bn{font-weight:800;color:var(--gold)}
+.hpb,.tb{height:14px;background:var(--p1);border-radius:10px;overflow:hidden;margin:6px 0}
+.hpb i{display:block;height:100%;background:linear-gradient(90deg,var(--hot),#ff9a5c);transition:width .4s}
+.tb i{display:block;height:100%;background:var(--ok);transition:width .1s linear}
+.q{background:var(--p1);border:2px solid var(--p2);border-radius:16px;padding:14px;font-size:18px;font-weight:700;margin:8px 0;overflow-wrap:anywhere}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts button{padding:16px 6px;font-size:18px;font-weight:800;background:var(--p2);color:var(--ink);border:3px solid #6a56d6;border-radius:14px;cursor:pointer;overflow-wrap:anywhere}
+.opts button:active{transform:scale(.97)}
+.opts button.ok{background:var(--ok);color:#06281c;border-color:#fff}
+.opts button.no{background:var(--bad);border-color:#fff}
+.opts button:disabled{opacity:.55}
+.opts button.ok:disabled,.opts button.no:disabled{opacity:1}
+.pw{display:flex;gap:10px;margin-top:10px}
+.pw button,.big{flex:1;padding:10px;background:var(--gold);color:#2b2000;border:0;border-radius:12px;font:800 15px inherit;font-family:inherit;cursor:pointer}
+.pw button:disabled{opacity:.35}
+.fb{min-height:28px;text-align:center;font-weight:800;margin-top:8px}
+.scr{text-align:center;padding:30px 10px}
+.scr h1{font-size:34px;margin:6px 0;color:var(--gold)}
+.big{display:block;width:100%;margin-top:16px;font-size:20px;padding:14px}
+.hit{animation:hit .4s}.shk{animation:shk .4s}
+@keyframes hit{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(-8deg);filter:brightness(2)}100%{transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@media (prefers-reduced-motion:reduce){.hit,.shk{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const SUP=["","","²","³"];
+function fmt(cs){const d=cs.length-1;let s="";
+cs.forEach((c,i)=>{if(!c)return;const pw=d-i,ab=Math.abs(c);
+const co=(ab==1&&pw>0)?"":ab;const v=pw==0?"":(pw==1?"x":"x"+SUP[pw]);
+if(!s)s=(c<0?"−":"")+co+v;else s+=(c<0?" − ":" + ")+co+v});
+return s||"0"}
+const CB=(a,b)=>{let r=1;for(let i=1;i<=b;i++)r=r*(a-b+i)/i;return Math.round(r)};
+let ac=null;
+function beep(f,d){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const BOSS=[
+{e:"🐉",n:"Division Dragon",tm:15},
+{e:"🤖",n:"Binomial Bot",tm:15},
+{e:"👾",n:"Remainder King",tm:12}];
+function mkDiv(cubic,kind){
+const c0=R(1,4)*(Math.random()<.5?-1:1),a=cubic?R(1,2):R(1,3),b=R(-4,4),d=R(-4,4),r=R(-5,5);
+const q=cubic?[a,b,d]:[a,b];
+const dv=cubic?[a,a*c0+b,b*c0+d,d*c0+r]:[a,a*c0+b,b*c0+r];
+const pre="("+fmt(dv)+") ÷ ("+fmt([1,c0])+")";
+if(kind=="q"){const ds=new Set([fmt(q)]);let g=0;
+while(ds.size<4&&g++<200){const t=q.slice();t[R(0,t.length-1)]+=R(0,1)?1:-1;if(Math.random()<.3){const j=R(0,t.length-1);t[j]=-t[j]}if(!t[0])continue;ds.add(fmt(t))}
+return {p:"Quotient of "+pre,a:fmt(q),o:sh([...ds])}}
+const ds=new Set([String(r)]);while(ds.size<4)ds.add(String(r+R(-4,4)));
+return {p:"Remainder of "+pre,a:String(r),o:sh([...ds])}}
+function mkBin(){
+const N=R(3,9),k=R(0,6);
+const ST=[
+{p:"To prove nC0 + 2·nC1 + 2²·nC2 + … = 3ⁿ, substitute x =",a:"2",o:["2","3","1","−2"]},
+{p:"To prove 8ⁿ − 1 is divisible by 7, write 8 =",a:"7 + 1",o:["7 + 1","6 + 1","9 − 1","8 + 0"]},
+{p:"To prove nC0 − nC1/2 + nC2/2² − … = (1/2)ⁿ, substitute x =",a:"−1/2",o:["−1/2","1/2","−2","2"]},
+{p:"To prove nC0 − 2·nC1 + 2²·nC2 − … = (−1)ⁿ, substitute x =",a:"−2",o:["−2","2","−1","1"]},
+{p:"Substituting x = 1 in (1 + x)ⁿ proves the sum of all nCk equals",a:"2ⁿ",o:["2ⁿ","n²","0","1"]}];
+const t=R(0,6);
+if(t<=1){const A=2**N,ds=new Set([String(A)]);[A-1,A*2,N*N,A/2].forEach(v=>{if(ds.size<4)ds.add(String(v))});return {p:"For n = "+N+": nC0 + nC1 + … + nCn =",a:String(A),o:sh([...ds])}}
+if(t==2){return {p:"For n = "+N+": nC0 − nC1 + nC2 − … + (−1)ⁿ·nCn =",a:"0",o:sh(["0","1","−1",String(2**N)])}}
+if(t==3){const A=CB(N,2),ds=new Set([String(A)]);[CB(N,3),N,2*N,A+N].forEach(v=>{if(ds.size<4)ds.add(String(v))});let z=1;while(ds.size<4)ds.add(String(A+z++));return {p:"Coefficient of x² in (1 + x)^"+N+" is",a:String(A),o:sh([...ds])}}
+const s=ST[R(0,ST.length-1)];return {p:s.p,a:s.a,o:sh(s.o)}}
+function mkQ(lv){
+if(lv==0)return mkDiv(false,Math.random()<.65?"q":"r");
+if(lv==1)return mkBin();
+return Math.random()<.5?mkDiv(true,Math.random()<.65?"q":"r"):mkBin()}
+let G,tm=null;
+function start(){G={lv:0,sc:0,hp3:3,cb:0,hp:100,f5:2,fz:1};nextQ()}
+function stars(n){return "❤️".repeat(n)+"🖤".repeat(3-n)}
+function nextQ(){G.q=mkQ(G.lv);G.t=BOSS[G.lv].tm;G.max=G.t;G.done=false;render();
+clearInterval(tm);tm=setInterval(()=>{G.t-=.1;const b=$("tb");if(b){b.style.width=Math.max(0,G.t/G.max*100)+"%";b.style.background=G.t<4?"var(--bad)":"var(--ok)"}if(G.t<=0)ans(-1)},100)}
+function render(){
+const B=BOSS[G.lv];
+$("app").innerHTML=
+"<div class='hud'><span>Level "+(G.lv+1)+"/3</span><span>⭐ "+G.sc+"</span><span>"+stars(G.hp3)+"</span><span>🔥 x"+G.cb+"</span></div>"+
+"<div class='boss'><div class='be' id='be'>"+B.e+"</div><div class='bn'>"+B.n+"</div><div class='hpb'><i id='hpi' style='width:"+Math.max(0,G.hp)+"%'></i></div></div>"+
+"<div class='tb'><i id='tb' style='width:100%'></i></div>"+
+"<div class='q'>"+G.q.p+"</div>"+
+"<div class='opts'>"+G.q.o.map((x,i)=>"<button data-i='"+i+"'>"+x+"</button>").join("")+"</div>"+
+"<div class='pw'><button id='p5' "+(G.f5?"":"disabled")+">✂ 50/50 ("+G.f5+")</button><button id='pf' "+(G.fz?"":"disabled")+">⏱ +8s ("+G.fz+")</button></div>"+
+"<div class='fb' id='fb'></div>";
+document.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>ans(+b.dataset.i));
+$("p5").onclick=()=>{if(G.done||!G.f5)return;G.f5--;let w=0;document.querySelectorAll(".opts button").forEach(b=>{if(b.textContent!=G.q.a&&w<2){b.disabled=true;w++}});$("p5").disabled=true;$("p5").textContent="✂ 50/50 ("+G.f5+")";if(G.f5)$("p5").disabled=false};
+$("pf").onclick=()=>{if(G.done||!G.fz)return;G.fz--;G.t=Math.min(G.t+8,G.max+8);G.max=Math.max(G.max,G.t);$("pf").disabled=true}}
+function ans(i){
+if(G.done)return;G.done=true;clearInterval(tm);
+const btns=[...document.querySelectorAll(".opts button")];
+btns.forEach(b=>{b.disabled=true;if(b.textContent==G.q.a)b.classList.add("ok")});
+const ok=i>=0&&G.q.o[i]==G.q.a;
+if(ok){G.cb++;const dm=12+3*Math.min(G.cb,5);G.hp-=dm;G.sc+=100+Math.round(G.t*10)+G.cb*20;
+$("fb").textContent="💥 Hit! −"+dm+" HP"+(G.cb>2?"  🔥 Combo x"+G.cb:"");$("be").classList.add("hit");beep(660,.12);setTimeout(()=>beep(880,.15),110)}
+else{if(i>=0)btns[i].classList.add("no");G.hp3--;G.cb=0;
+$("fb").textContent=(i<0?"⏰ Time's up! ":"💔 Ouch! ")+"Answer: "+G.q.a;document.querySelector(".boss").classList.add("shk");beep(160,.3)}
+$("hpi").style.width=Math.max(0,G.hp)+"%";
+setTimeout(()=>{
+if(G.hp3<=0)return over(false);
+if(G.hp<=0){if(G.lv==2)return over(true);return lvlUp()}
+nextQ()},1400)}
+function lvlUp(){
+beep(523,.15);setTimeout(()=>beep(784,.25),150);
+const c=BOSS[G.lv];G.lv++;G.hp=100;G.fz=1;G.sc+=300;
+$("app").innerHTML="<div class='scr'><div class='be'>"+c.e+"💀</div><h1>"+c.n+" defeated!</h1><p>+300 bonus. Next up: "+BOSS[G.lv].e+" "+BOSS[G.lv].n+"</p><button class='big' id='go'>Fight on ⚔️</button></div>";
+$("go").onclick=nextQ}
+function over(w){
+clearInterval(tm);const st=G.hp3==3?3:G.hp3==2?2:1;
+$("app").innerHTML="<div class='scr'><div class='be'>"+(w?"🏆":"💀")+"</div><h1>"+(w?"Victory!":"Game over")+"</h1><p>Score: <b>"+G.sc+"</b>"+(w?"<br>"+"⭐".repeat(st)+" stars (fewer mistakes = more stars)":"<br>Reached level "+(G.lv+1)+" of 3")+"</p><button class='big' id='go'>Play again</button></div>";
+$("go").onclick=start}
+$("app").innerHTML="<div class='scr'><div class='be'>⚔️</div><h1>Remainder Wars</h1><p>Defeat 3 bosses with polynomial division and the Binomial Theorem.<br>Answer fast for bonus points. Build combos for bigger hits.<br>3 lives. Questions are random every time!</p><button class='big' id='go'>Start battle</button></div>";
+$("go").onclick=start;
+<\/script>
+</body>
+</html>`;
+
+        const PRACTICE_HTML = `<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Algebraic Proofs: Polynomial Division and the Binomial Theorem</title>
+<style>
+:root{--bg:#f3f7f4;--card:#fff;--ink:#14302b;--mut:#5b7a72;--a:#0f766e;--b:#e8590c;--ok:#15803d;--bad:#b91c1c;--line:#cfe0da;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1b19;--card:#172a27;--ink:#e6f2ee;--mut:#9bb8b0;--a:#2dd4bf;--b:#fb923c;--ok:#4ade80;--bad:#f87171;--line:#27423d}}
+:root[data-theme="dark"]{--bg:#0e1b19;--card:#172a27;--ink:#e6f2ee;--mut:#9bb8b0;--a:#2dd4bf;--b:#fb923c;--ok:#4ade80;--bad:#f87171;--line:#27423d}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Segoe UI",Arial,sans-serif;line-height:1.55}
+.wrap{max-width:720px;margin:0 auto;padding:12px}
+.tabs{display:flex;gap:8px;margin-bottom:10px}
+.tabs button{flex:1;padding:10px 4px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;font:inherit;font-weight:800;cursor:pointer}
+.tabs button.on{background:var(--a);color:#fff;border-color:var(--a)}
+.stage,.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px}
+.stage{min-height:380px}
+.stage h2{margin:0 0 10px;font-size:22px;color:var(--a)}
+.ln{opacity:0;transform:translateY(8px);transition:.5s;margin:8px 0;font-size:17px}
+.ln.show{opacity:1;transform:none}
+.ln b{color:var(--b)}
+pre.m{font:600 15px/1.45 "Courier New",monospace;background:var(--bg);padding:10px;border-radius:10px;overflow-x:auto;margin:6px 0}
+.ctrl{display:flex;align-items:center;gap:8px}
+button{border:0;background:var(--a);color:#fff;border-radius:10px;padding:9px 14px;font:inherit;font-weight:800;cursor:pointer}
+button.o{background:var(--b)}button.g{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.bar{flex:1;height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--b);transition:width .3s}
+.cnt{color:var(--mut);font-size:14px}
+.hud{display:flex;justify-content:space-between;font-weight:800;margin-bottom:8px}
+.q{font-size:19px;font-weight:800;margin:8px 0 14px}
+.opts{display:grid;gap:10px}
+.opts button{padding:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font-size:17px}
+.opts button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opts button.no{background:var(--bad);color:#fff;border-color:var(--bad)}
+.fb{min-height:48px;margin-top:10px;font-weight:700}
+.big{font-size:44px;text-align:center}
+.next{margin-top:8px;background:var(--b)}
+.hide{display:none}
+canvas{width:100%;height:auto;display:block;max-width:360px;margin:0 auto}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.row label{font-weight:800;min-width:140px}
+.row input[type=range]{flex:1;min-width:120px}
+.mono{font:700 15px "Courier New",monospace;overflow-wrap:anywhere}
+.eq{margin:6px 0}.eq b{color:var(--b)}
+.note{color:var(--mut);font-size:14px}
+@media (prefers-reduced-motion:reduce){.ln{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="tabs"><button id="t1" class="on">🎬 Video</button><button id="t2">🎮 Game</button><button id="t3">🎱 Plinko Lab</button></div>
+
+<section id="vid">
+<div class="stage" id="stage"></div>
+<div class="ctrl"><button id="pp">⏸</button><button id="pv">◀</button><div class="bar"><i id="pb"></i></div><button id="nx">▶</button><span class="cnt" id="cn"></span></div>
+</section>
+
+<section id="game" class="hide"><div class="stage">
+<div class="hud"><span>⭐ Score: <span id="sc">0</span></span><span id="lv"></span><span>🔥 <span id="st">0</span></span></div>
+<div id="gq"></div></div></section>
+
+<section id="lab" class="hide">
+<div class="card">
+<canvas id="c"></canvas>
+<div class="row"><button id="d1">Drop 1</button><button id="d10" class="o">Drop 10</button><button id="d100" class="o">Drop 100</button><button id="rs" class="g">Clear</button></div>
+<div class="row"><label>Rows n = <span id="nv">8</span></label><input id="n" type="range" min="1" max="12" value="8"></div>
+<div class="row"><label>P(right) p = <span id="pv2">0.5</span></label><input id="p" type="range" min="0.1" max="0.9" step="0.1" value="0.5"></div>
+<div class="row"><label style="min-width:0"><input type="checkbox" id="pc"> Show path counts (Pascal's triangle)</label></div>
+<div class="note">Bars = your experiment. Orange dots = theory: nCk · p^k · q^(n−k). Drop more balls and they match.</div>
+</div>
+<div class="card" id="info"></div>
+</section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const S=[
+{t:"The big idea 🚀",l:["A delivery app's daily orders grow <b>non-linearly</b> (a big polynomial), while riders grow steadily (a small polynomial).","To find the <b>load per rider</b>, we divide one polynomial by another.","Today: <b>polynomial division</b>, then the <b>Binomial Theorem</b> for proofs."]},
+{t:"Long division: the steps",l:["Just like numbers: write both polynomials in <b>descending powers</b> of x.","Divide the <b>leading term</b> of the dividend by the <b>leading term</b> of the divisor.","Multiply the result by the <b>whole</b> divisor, then subtract.","Repeat until the <b>degree of the remainder is lower than the degree of the divisor</b>."]},
+{t:"Example: (2x³ − 5x² − 2) ÷ (2x² − x − 1)",l:["A <b>missing term</b> (no x term)? Leave a blank space or write 0x.","2x³ ÷ 2x² = x → subtract x(2x² − x − 1) to eliminate 2x³","−4x² ÷ 2x² = −2 → subtract −2(2x² − x − 1) to eliminate −4x²","<pre class='m'>         x − 2\\n2x²−x−1 ) 2x³ −5x²  +0x −2\\n          2x³ − x²  − x\\n          −4x²  + x  −2\\n          −4x²  +2x  +2\\n                 −x  −4</pre>","<b>Quotient: x − 2. Remainder: −x − 4.</b> The remainder's degree (1) is below 2, so we stop."]},
+{t:"Other variables? Treat them as numbers",l:["Rule: <b>treat it as a polynomial in x</b>; other letters are constants.","(4x² − 9ax − 9a²) ÷ (x − 3a)","4x² ÷ x = 4x → subtract 4x(x − 3a) = 4x² − 12ax → left: 3ax − 9a²","3ax ÷ x = 3a → subtract 3a(x − 3a) → left: 0","<b>Quotient: 4x + 3a. Remainder: 0.</b>"]},
+{t:"Common mistakes ⚠️",l:["❌ Forgetting to change signs when subtracting (the #1 mistake).","❌ Multiplying only the first term of the divisor.","❌ Ignoring a missing term in the dividend.","✅ Check: <b>divisor × quotient + remainder = dividend</b>."]},
+{t:"Challenge: height of the box 📦",l:["Volume = base area × height, so height = volume ÷ base area.","(4x³ + 4x² − 9x − 9) ÷ (2x² − x − 3)","4x³ ÷ 2x² = 2x → subtract 2x(2x² − x − 3) → left: 6x² − 3x − 9","6x² ÷ 2x² = 3 → subtract 3(2x² − x − 3) → left: 0","<b>Height = 2x + 3</b>, remainder 0 ✅"]},
+{t:"The Binomial Theorem 🧮",l:["(1+x)ⁿ = ₙC₀ + ₙC₁x + ₙC₂x² + … + ₙCₙxⁿ","Trick for proofs: <b>substitute a smart value for x</b>.","x = 1 → 2ⁿ = ₙC₀ + ₙC₁ + … + ₙCₙ  so the sum is <b>2ⁿ</b>","x = −1 → 0 = ₙC₀ − ₙC₁ + ₙC₂ − …  so the alternating sum is <b>0</b>"]},
+{t:"Which x should I pick?",l:["Want <b>3ⁿ</b> with coefficients 2ᵏ? → x = <b>2</b>","Want <b>(−1)ⁿ</b> with coefficients (−2)ᵏ? → x = <b>−2</b>","Want <b>(1/2)ⁿ</b> with terms (−1)ᵏ·ₙCₖ/2ᵏ? → x = <b>−1/2</b>","Rule: x is the number that repeats as the base in the series."]},
+{t:"Challenge: divisible by 7 🎯",l:["Prove 8ⁿ − 1 is divisible by 7 (n a positive integer).","Write 8 = <b>7 + 1</b> → (7+1)ⁿ − 1","= 7ⁿ + ₙC₁·7ⁿ⁻¹ + … + ₙCₙ₋₁·7 + 1 − 1","Every remaining term has a factor of 7 → <b>divisible by 7 ∎</b>"]},
+{t:"Summary 🏁",l:["Long division: arrange → divide → multiply → subtract → repeat until the degree drops.","Other variables = constants.","Binomial proofs: substitute 1, −1, 2, −2 or −1/2 into (1+x)ⁿ.","Ready? Try the Game and the Plinko Lab! 🎮🎱"]}
+];
+let si=0,li=0,playing=true,timer;
+function render(){const s=S[si];$("stage").innerHTML="<h2>"+s.t+"</h2>"+s.l.map(x=>"<div class='ln'>"+x+"</div>").join("");$("cn").textContent=(si+1)+"/"+S.length;$("pb").style.width=(si/(S.length-1)*100)+"%";li=0;tick()}
+function tick(){clearTimeout(timer);const L=document.querySelectorAll(".ln");
+if(li<L.length){L[li++].classList.add("show");if(playing)timer=setTimeout(tick,3200)}
+else if(playing&&si<S.length-1){timer=setTimeout(()=>{si++;render()},2800)}}
+$("pp").onclick=()=>{playing=!playing;$("pp").textContent=playing?"⏸":"▶";if(playing)tick();else clearTimeout(timer)};
+$("nx").onclick=()=>{if(si<S.length-1){si++;render()}};
+$("pv").onclick=()=>{if(si>0){si--;render()}};
+function show(k){["vid","game","lab"].forEach((id,i)=>{$(id).classList.toggle("hide",i+1!=k);$("t"+(i+1)).classList.toggle("on",i+1==k)});clearTimeout(timer);if(k==1&&playing)tick();if(k==2)startGame()}
+[1,2,3].forEach(k=>$("t"+k).onclick=()=>show(k));
+render();
+
+const Q=[
+["Quotient of (x² − 5x + 1) ÷ (x − 2)","x − 3","x + 3","x − 2","x − 3"],
+["Remainder of (x² − 5x + 1) ÷ (x − 2)","−5","1","5","−5"],
+["Quotient of (x³ − 4x + 1) ÷ (x − 3)","x² + 3x + 5","x² − 3x + 5","x² + 3x − 5","x² + 3x + 5"],
+["Remainder of (x³ − 4x + 1) ÷ (x − 3)","16","−15","1","16"],
+["Quotient of (x³ − 2ax² + 3a³) ÷ (x + a)","x² − 3ax + 3a²","x² + 3ax + 3a²","x² − ax + 3a²","x² − 3ax + 3a²"],
+["Quotient of (x³ + 3x²y − 2y³) ÷ (x + y)","x² + 2xy − 2y²","x² + xy − 2y²","x² − 2xy + 2y²","x² + 2xy − 2y²"],
+["Remainder of (4x² − 9ax − 9a²) ÷ (x − 3a)","0","−9a²","3a","0"],
+["A box has volume 4x³+4x²−9x−9 and base area 2x²−x−3. Its height is","2x + 3","2x − 3","x + 3","2x + 3"],
+["To prove ₙC₀ − ₙC₁ + ₙC₂ − … = 0, substitute x =","−1","1","0","−1"],
+["To prove ₙC₀ + 2ₙC₁ + 2²ₙC₂ + … = 3ⁿ, substitute x =","2","3","1","2"],
+["To prove ₙC₀ − 2ₙC₁ + 2²ₙC₂ − … = (−1)ⁿ, substitute x =","−2","2","−1","−2"],
+["To prove the alternating series with ₙCₖ/2ᵏ equals (1/2)ⁿ, substitute x =","−1/2","1/2","−2","−1/2"],
+["To prove 8ⁿ − 1 is divisible by 7, write 8 =","7 + 1","8 + 0","9 − 1","7 + 1"],
+["We stop long division when the remainder's degree is…","lower than the divisor's degree","always zero","higher than the divisor's","lower than the divisor's degree"],
+["If a term is missing in the dividend, we…","leave a blank (0x)","delete it","change the problem","leave a blank (0x)"],
+["The most common long-division mistake is…","forgetting to change signs when subtracting","arranging in descending order","writing the remainder","forgetting to change signs when subtracting"]
+];
+let qs,qi,score,lives,streak;
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function startGame(){qs=sh(Q);qi=0;score=0;lives=3;streak=0;hud();ask()}
+function hud(){$("sc").textContent=score;$("st").textContent=streak;$("lv").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives)}
+function ask(){
+if(lives<=0||qi>=qs.length){const w=lives>0;$("gq").innerHTML="<div class='big'>"+(w?"🏆":"💔")+"</div><div class='q' style='text-align:center'>"+(w?"You finished every question! ":"Out of lives. ")+"Score: "+score+"</div><button class='next' id='rs2'>Play again</button>";$("rs2").onclick=startGame;return}
+const q=qs[qi];const o=sh(q.slice(1,4));
+$("gq").innerHTML="<div class='q'>"+(qi+1)+"/"+qs.length+": "+q[0]+"</div><div class='opts'>"+o.map(x=>"<button>"+x+"</button>").join("")+"</div><div class='fb' id='fb'></div>";
+document.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{
+const right=b.textContent==q[4];document.querySelectorAll(".opts button").forEach(x=>{x.disabled=true;if(x.textContent==q[4])x.classList.add("ok")});
+if(right){streak++;score+=10+Math.min(streak,5)*2;$("fb").textContent="✅ Correct! "+(streak>2?"🔥 Streak "+streak:"")}else{b.classList.add("no");lives--;streak=0;$("fb").textContent="❌ Correct answer: "+q[4]}
+hud();qi++;const nb=document.createElement("button");nb.className="next";nb.textContent="Next";nb.onclick=ask;$("fb").appendChild(document.createElement("br"));$("fb").appendChild(nb)})}
+
+/* Plinko lab */
+const cv=$("c"),ctx=cv.getContext("2d");
+const W=360,H=470,dpr=Math.min(window.devicePixelRatio||1,2);cv.width=W*dpr;cv.height=H*dpr;ctx.scale(dpr,dpr);
+let n=8,p=.5,counts,total,balls=[],pas=false;
+const C=(a,b)=>{let r=1;for(let i=1;i<=b;i++)r=r*(a-b+i)/i;return Math.round(r)};
+const col=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||"#888";
+const cx=W/2,T0=34;let dx,dy,pb,base,Hh;
+const xp=(r,j)=>cx+(j-r/2)*dx;
+function reset(){n=+$("n").value;p=+$("p").value;$("nv").textContent=n;$("pv2").textContent=p.toFixed(1);counts=Array(n+1).fill(0);total=0;balls=[];
+dx=Math.min(34,W/(n+2));dy=Math.min(26,250/n);pb=T0+n*dy;base=H-18;Hh=base-(pb+16);info();draw()}
+function info(){
+const row=[];for(let k=0;k<=n;k++)row.push(C(n,k));
+const alt=row.map((v,k)=>k%2?"− "+v:(k?"+ ":"")+v).join(" ");
+$("info").innerHTML=
+"<div class='eq'>The number of paths to bin k is <b>ₙCₖ</b> (choose which k of the n steps go right).</div>"+
+"<div class='eq mono'>n = "+n+": "+row.join("  ")+"</div>"+
+"<div class='eq'>x = 1 → (1+1)ⁿ: <span class='mono'>"+row.join(" + ")+" = <b>"+Math.pow(2,n)+"</b> = 2^"+n+"</span></div>"+
+"<div class='eq'>x = −1 → (1−1)ⁿ: <span class='mono'>"+alt+" = <b>0</b></span></div>"+
+"<div class='eq'>With p = "+p.toFixed(1)+", q = "+(1-p).toFixed(1)+": (p+q)ⁿ = <b>1</b>, so all probabilities add up to 1.</div>"}
+function drop(fast){
+const wp=[{x:cx,y:T0-16}];let k=0;
+for(let r=0;r<n;r++){if(Math.random()<p)k++;if(r<n-1)wp.push({x:xp(r+1,k),y:T0+(r+1)*dy-5})}
+wp.push({x:xp(n,k),y:pb+10});balls.push({wp,i:0,t:0,k,f:fast})}
+function burst(c){let i=0;const id=setInterval(()=>{drop(c>1);if(++i>=c)clearInterval(id)},c>10?35:90)}
+function step(dt){for(let b=balls.length-1;b>=0;b--){const o=balls[b];o.t+=dt/(o.f?.045:.09);
+while(o.t>=1&&o.i<o.wp.length-1){o.t-=1;o.i++}
+if(o.i>=o.wp.length-1){counts[o.k]++;total++;balls.splice(b,1)}}}
+function draw(){
+const ink=col("--ink"),a=col("--a"),bb=col("--b"),mut=col("--mut"),line=col("--line");
+ctx.clearRect(0,0,W,H);
+for(let r=0;r<n;r++)for(let j=0;j<=r;j++){const x=xp(r,j),y=T0+r*dy;
+if(pas){ctx.fillStyle=ink;ctx.font="600 "+(n>9?9:11)+"px sans-serif";ctx.textAlign="center";ctx.fillText(C(r,j),x,y+4)}
+else{ctx.fillStyle=mut;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill()}}
+const pr=[];for(let k=0;k<=n;k++)pr.push(C(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));
+const mx=Math.max(1,...counts,total*Math.max(...pr));
+ctx.strokeStyle=line;ctx.beginPath();ctx.moveTo(10,base);ctx.lineTo(W-10,base);ctx.stroke();ctx.textAlign="center";
+for(let k=0;k<=n;k++){const x=xp(n,k),h=counts[k]/mx*Hh;
+ctx.fillStyle=a;ctx.fillRect(x-dx*.4,base-h,dx*.8,h);
+ctx.fillStyle=mut;ctx.font="11px sans-serif";ctx.fillText(k,x,base+13);
+if(counts[k]){ctx.fillStyle=ink;ctx.fillText(counts[k],x,base-h-3)}
+ctx.fillStyle=bb;ctx.beginPath();ctx.arc(x,base-total*pr[k]/mx*Hh,3.5,0,7);ctx.fill()}
+for(const o of balls){const A=o.wp[o.i],B=o.wp[Math.min(o.i+1,o.wp.length-1)],t=Math.min(o.t,1);
+ctx.fillStyle=bb;ctx.beginPath();ctx.arc(A.x+(B.x-A.x)*t,A.y+(B.y-A.y)*t*t,5,0,7);ctx.fill()}
+ctx.fillStyle=mut;ctx.font="12px sans-serif";ctx.textAlign="left";ctx.fillText("balls: "+total,8,14)}
+let last=performance.now();
+function loop(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!$("lab").classList.contains("hide")){step(dt);draw()}requestAnimationFrame(loop)}
+$("d1").onclick=()=>drop(false);$("d10").onclick=()=>burst(10);$("d100").onclick=()=>burst(100);
+$("rs").onclick=reset;$("n").oninput=reset;$("p").oninput=reset;$("pc").onchange=e=>{pas=e.target.checked};
+reset();requestAnimationFrame(loop);
+<\/script>
+</body>
+</html>`;
+
+        const VIDEO_URL = "video.mp4";
+
+        function openExt(kind) {
+          try { T.pause(); } catch (e) {}
+
+          if (kind === "video") {
+            const a = document.createElement("a");
+            a.href = VIDEO_URL;
+            a.target = "_blank";
+            a.rel = "noopener";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            return;
+          }
+
+          const html =
+            kind === "game"
+              ? GAME_HTML
+              : kind === "practice"
+                ? PRACTICE_HTML
+                : "";
+          if (!html.trim()) {
+            alert("Content not loaded yet for " + kind + ".");
+            return;
+          }
+          const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.target = "_blank";
+          a.rel = "noopener";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 120000);
+        }
+
+        function act(a, d) {
+          switch (a) {
+            case "nav":
+              toggleNav();
+              return;
+            case "closeNav":
+              toggleNav(false);
+              return;
+            case "teacher":
+              toggleTeacher();
+              return;
+            case "closeTeacher":
+              toggleTeacher(false);
+              return;
+            case "goto":
+              go(+d.n);
+              return;
+            case "pause":
+              setPause(!paused);
+              return;
+            case "timerVis":
+              S.ui.timerVis = !S.ui.timerVis;
+              break;
+            case "restart":
+              restartScene(S.scene);
+              return;
+            case "replay":
+              if (S.scene === 1) introSkip = false;
+              render(true);
+              return;
+            case "sound":
+              S.ui.sound = !S.ui.sound;
+              sfx("ok");
+              break;
+            case "full":
+              fullscreen();
+              return;
+            case "spot":
+              S.ui.spot = !S.ui.spot;
+              break;
+            case "auto":
+              S.ui.auto = !S.ui.auto;
+              break;
+            case "markDone":
+              S.done[S.scene] = !S.done[S.scene];
+              S.fired[S.scene] = true;
+              break;
+            case "resetScores":
+              S.scores = [0, 0, 0];
+              break;
+            case "resetSession":
+              confirmBox(
+                "Reset the whole session? Progress, scores and settings for this lesson will be cleared.",
+                resetSession,
+              );
+              return;
+            case "cno":
+              $("#confirm").classList.remove("open");
+              confirmCb = null;
+              return;
+            case "cyes":
+              $("#confirm").classList.remove("open");
+              const cb = confirmCb;
+              confirmCb = null;
+              cb && cb();
+              return;
+            case "prev":
+              prevAct();
+              return;
+            case "next":
+              nextAct();
+              return;
+            case "hint":
+              hintAct();
+              return;
+            case "enter":
+              SC[1].next();
+              return;
+            case "begin":
+              SC[2].next();
+              return;
+            case "skipIntro":
+              introSkip = true;
+              $("#scene .s1") && $("#scene .s1").classList.add("skip");
+              render(false);
+              return;
+            case "game":
+              openExt("game");
+              return;
+            case "practice":
+              openExt("practice");
+              return;
+            case "video":
+              openExt("video");
+              return;
+            case "s5first":
+              S.s5.step = 0;
+              S.s5.full = false;
+              break;
+            case "s5replay":
+              break;
+            case "s5full":
+              S.s5.full = true;
+              if (S.s5.step < 7) {
+                S.s5.step = 7;
+              }
+              break;
+            case "s5hide":
+              S.s5.full = false;
+              break;
+            case "s6pick":
+              S.s6.pick = d.k;
+              S.s6.expl = false;
+              sfx(d.k === "A" ? "ok" : "bad");
+              break;
+            case "s6try":
+              S.s6.pick = null;
+              S.s6.expl = false;
+              break;
+            case "s6expl":
+              S.s6.expl = true;
+              sfx("ok");
+              break;
+            case "s7ex":
+              S.s7.ex = +d.i;
+              hintOn = false;
+              break;
+            case "s7pick":
+              S.s7.pick[S.s7.ex] = +d.i;
+              sfx(+d.i === EXS[S.s7.ex].ok ? "ok" : "bad");
+              break;
+            case "s7fix":
+              S.s7.fix[S.s7.ex] = true;
+              sfx("ok");
+              break;
+            case "s8round":
+              S.s8.round = +d.i;
+              T.reset();
+              cue("DISCUSS WITH YOUR TEAM");
+              break;
+            case "s8reveal":
+              S.s8.rev[S.s8.round] = !S.s8.rev[S.s8.round];
+              if (S.s8.rev[S.s8.round]) sfx("ok");
+              break;
+            case "s8resetRound":
+              S.s8.rev[S.s8.round] = false;
+              T.reset();
+              break;
+            case "s8nextq":
+              if (S.s8.round < 4) {
+                S.s8.round++;
+                T.reset();
+                cue("DISCUSS WITH YOUR TEAM");
+              }
+              break;
+            case "teams":
+              S.teams = +d.v;
+              if (S.active >= S.teams) S.active = 0;
+              break;
+            case "active":
+              S.active = +d.i;
+              break;
+            case "score":
+              Score.add(+d.i, +d.v);
+              return;
+            case "bonus":
+              S.bonus = +d.v;
+              break;
+            case "preset":
+              T.setPreset(+d.v);
+              return;
+            case "tToggle":
+              T.toggle();
+              render(false);
+              return;
+            case "tReset":
+              T.reset();
+              render(false);
+              return;
+            case "tStop":
+              T.stop();
+              render(false);
+              return;
+            case "s9pick": {
+              const s = S.s9;
+              if (s.ok[s.stage]) return;
+              s.pick = +d.i;
+              if (+d.i === BQ[s.stage].c) {
+                s.ok[s.stage] = true;
+                sfx("ok");
+              } else sfx("bad");
+              break;
+            }
+            case "s9hint":
+              SC[9].onHint();
+              break;
+            case "s9sol":
+              S.s9.sol = !S.s9.sol;
+              break;
+            case "s9mode":
+              S.s9.timer = !S.s9.timer;
+              break;
+            case "s11rev":
+              SC[11].next();
+              break;
+            case "s12replay":
+              replayLesson();
+              return;
+            case "s12boss":
+              S.s9 = DEF().s9;
+              S.done[9] = false;
+              S.fired[9] = false;
+              T.reset();
+              go(9);
+              return;
+            default:
+              return;
+          }
+          render(false);
+        }
+
+        document.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-act]");
+          if (!b || b.disabled) return;
+          if (b.dataset.act === "active" && e.target.closest("button")) return;
+          act(b.dataset.act, b.dataset);
+        });
+        document.addEventListener("change", (e) => {
+          if (e.target.id === "jump") go(+e.target.value);
+        });
+        document.addEventListener("keydown", (e) => {
+          const t = e.target,
+            tag = t && t.tagName;
+          if (
+            tag === "INPUT" ||
+            tag === "TEXTAREA" ||
+            tag === "SELECT" ||
+            (t && t.isContentEditable)
+          )
+            return;
+          if (e.ctrlKey || e.metaKey || e.altKey) return;
+          const k = e.key;
+          if (
+            (k === "Enter" || k === " ") &&
+            t &&
+            t.dataset &&
+            t.dataset.act &&
+            tag !== "BUTTON"
+          ) {
+            e.preventDefault();
+            act(t.dataset.act, t.dataset);
+            return;
+          }
+          if (k === "Escape") {
+            if ($("#confirm").classList.contains("open")) {
+              act("cno", {});
+              return;
+            }
+            if ($("#pausev").classList.contains("open")) {
+              return;
+            }
+            if (
+              $("#nav").classList.contains("open") ||
+              $("#teacher").classList.contains("open")
+            ) {
+              closeOverlays();
+              return;
+            }
+            if (S.ui.spot) {
+              S.ui.spot = false;
+              render(false);
+            }
+            return;
+          }
+          const ovOpen =
+            $("#nav").classList.contains("open") ||
+            $("#confirm").classList.contains("open") ||
+            $("#pausev").classList.contains("open");
+          if (k === "l" || k === "L") {
+            toggleNav();
+            return;
+          }
+          if (ovOpen) return;
+          switch (k) {
+            case "ArrowRight":
+              e.preventDefault();
+              nextAct();
+              break;
+            case "ArrowLeft":
+              e.preventDefault();
+              prevAct();
+              break;
+            case " ":
+              if (
+                tag !== "BUTTON" &&
+                (S.scene === 8 || (S.scene === 9 && S.s9.timer))
+              ) {
+                e.preventDefault();
+                T.toggle();
+                render(false);
+              }
+              break;
+            case "h":
+            case "H":
+              hintAct();
+              break;
+            case "r":
+            case "R":
+              if (S.scene === 1) introSkip = false;
+              render(true);
+              break;
+            case "f":
+            case "F":
+              fullscreen();
+              break;
+            case "g":
+            case "G":
+              openExt("game");
+              break;
+            case "p":
+            case "P":
+              openExt("practice");
+              break;
+            case "v":
+            case "V":
+              openExt("video");
+              break;
+          }
+        });
+
+        function fit() {
+          const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+          $("#stage").style.transform =
+            `translate(${(innerWidth - 1920 * s) / 2}px,${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+        }
+        addEventListener("resize", fit);
+
+        function initBg() {
+          const bg = $("#bg"),
+            P = [
+              "x²",
+              "−4x",
+              "2x³",
+              "÷",
+              "+0x",
+              "−2",
+              "x−2",
+              "2x²−x−1",
+              "−x−4",
+              "(  )",
+              "−",
+              "3x",
+            ];
+          bg.innerHTML = P.map(
+            (p, i) =>
+              `<span class="pt" style="left:${(i * 137) % 1800}px;top:${(i * 211) % 960}px;font-size:${60 + ((i * 37) % 110)}px;--d:${26 + ((i * 7) % 20)}s;--dl:-${(i * 3) % 20}s">${p}</span>`,
+          ).join("");
+        }
+
+        window.PCA = {
+          verify,
+          get state() {
+            return S;
+          },
+          go,
+          act,
+          T,
+          SC,
+          BQ,
+          ROUNDS,
+        };
+
+        initBg();
+        fit();
+        T.ms = S.preset * 1000;
+        if (S.scene !== 1) S.visited[S.scene] = 1;
+        render(true);
+        if (CUES[S.scene]) cue(CUES[S.scene]);
+      })();
+    </script>
+  </body>
+</html>
